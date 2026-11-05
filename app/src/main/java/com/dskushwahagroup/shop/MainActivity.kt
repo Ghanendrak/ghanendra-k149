@@ -145,6 +145,25 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
     }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFF10284A))) {
+                Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("DS KUSHWAHA GROUP", color = androidx.compose.ui.graphics.Color(0xFFE2BD70), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("BIG SAVINGS.\nBETTER CHOICES.", color = androidx.compose.ui.graphics.Color.White, fontSize = 25.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 29.sp)
+                    Text("Explore our demo catalogue across five business categories.", color = androidx.compose.ui.graphics.Color.White, fontSize = 13.sp)
+                    Button(onClick = onExplore, colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFFC69A43))) { Text("SHOP NOW", color = androidx.compose.ui.graphics.Color(0xFF10284A), fontWeight = FontWeight.Bold) }
+                }
+            }
+        }
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                items(listOf("✨ Special Deals", "🏷️ Demo Offers", "🚚 Easy Enquiry")) { label ->
+                    Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.secondaryContainer) {
+                        Text(label, Modifier.padding(horizontal = 14.dp, vertical = 10.dp), fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+        item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(22.dp)) {
                 Column(Modifier.padding(22.dp)) {
