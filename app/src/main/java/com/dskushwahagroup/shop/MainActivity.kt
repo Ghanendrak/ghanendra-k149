@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.net.URLEncoder
+import coil.compose.AsyncImage
 
 private fun demoPrice(p:String)=mapOf("Residential Plot" to 250000,"Commercial Plot" to 450000,"Agricultural Land" to 180000,"House / Apartment" to 2500000,"Cement" to 390,"TMT / Steel" to 68,"Bricks" to 9,"Sand & Aggregate" to 1800,"Solar Panel" to 12500,"Solar Inverter" to 18500,"Solar Street Light" to 6500,"Solar Pump" to 32000,"Smartphone" to 12999,"Smart Watch" to 1999,"Bluetooth Earbuds" to 1499,"Home Electronics" to 4999,"Men's Apparel" to 799,"Women's Apparel" to 899,"Footwear" to 999,"Accessories" to 399)[p]?:999
 
