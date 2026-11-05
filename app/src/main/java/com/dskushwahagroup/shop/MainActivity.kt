@@ -148,11 +148,18 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
     MaterialTheme(colorScheme = lightColorScheme(
         primary = androidx.compose.ui.graphics.Color(0xFF10284A),
         secondary = androidx.compose.ui.graphics.Color(0xFFC69A43),
-        background = androidx.compose.ui.graphics.Color(0xFFF5F6F8)
+        background = androidx.compose.ui.graphics.Color(0xFFF5F6F8),
+        surface = androidx.compose.ui.graphics.Color(0xFFFFFFFF),
+        surfaceVariant = androidx.compose.ui.graphics.Color(0xFFF0F2F6),
+        primaryContainer = androidx.compose.ui.graphics.Color(0xFFE7EDF5),
+        secondaryContainer = androidx.compose.ui.graphics.Color(0xFFFFF3D9),
+        onSurface = androidx.compose.ui.graphics.Color(0xFF182334)
     )) {
         Scaffold(
+            containerColor = androidx.compose.ui.graphics.Color(0xFFF5F6F8),
             topBar = {
                 TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = androidx.compose.ui.graphics.Color.White),
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             Surface(
@@ -271,23 +278,27 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
 
 @Composable
 fun BusinessScreen(units: List<UnitInfo>, hindi: Boolean, onSelect: (UnitInfo) -> Unit) {
-    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        item { Text(if (hindi) "अपना व्यवसाय चुनें" else "Choose a business", fontSize = 21.sp, fontWeight = FontWeight.Bold) }
-        items(units) { unit ->
-            Card(onClick = { onSelect(unit) }, shape = RoundedCornerShape(16.dp)) {
-                Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text(unit.name, fontWeight = FontWeight.Bold)
-                        Text(unit.hindi, color = MaterialTheme.colorScheme.secondary)
-                        Text(unit.detail, fontSize = 12.sp)
-                    }
-                    Icon(Icons.Default.ChevronRight, null)
-                }
-            }
-        }
+ LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(13.dp)){
+  item{Text(if(hindi) "हमारे व्यवसाय" else "Explore our businesses",fontSize=24.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(hindi) "अपनी जरूरत के अनुसार एक श्रेणी चुनें।" else "Choose a category to browse its products and services.",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+  items(units){unit->
+   Card(onClick={onSelect(unit)},shape=RoundedCornerShape(22.dp),elevation=CardDefaults.cardElevation(2.dp)){
+    Column(Modifier.fillMaxWidth().padding(17.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
+     Row(verticalAlignment=Alignment.CenterVertically){
+      Surface(shape=RoundedCornerShape(16.dp),color=MaterialTheme.colorScheme.primary,modifier=Modifier.size(52.dp)){Box(contentAlignment=Alignment.Center){Icon(Icons.Default.Store,null,tint=androidx.compose.ui.graphics.Color(0xFFFFD98A),modifier=Modifier.size(27.dp))}}
+      Spacer(Modifier.width(12.dp))
+      Column(Modifier.weight(1f)){Text(unit.name,fontWeight=FontWeight.ExtraBold,fontSize=14.sp,color=MaterialTheme.colorScheme.primary);Text(unit.hindi,fontSize=11.sp,color=MaterialTheme.colorScheme.secondary)}
+      Icon(Icons.Default.ChevronRight,null,tint=MaterialTheme.colorScheme.secondary)
+     }
+     Text(unit.detail,fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+      Text("${unit.products.size} catalogue items",fontSize=10.sp,fontWeight=FontWeight.SemiBold,color=MaterialTheme.colorScheme.secondary)
+      Text(if(hindi) "कैटलॉग खोलें  →" else "Open catalogue  →",fontSize=11.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
+     }
     }
+   }
+  }
+ }
 }
-
 @Composable
 fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (String) -> Unit) {
  var search by remember { mutableStateOf("") }
@@ -377,19 +388,26 @@ fun CheckoutScreen(cart:List<CartLine>,name:String,onName:(String)->Unit,mobile:
 
 @Composable
 fun ContactScreen(hindi: Boolean, onWhatsApp: () -> Unit) {
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text(if (hindi) "संपर्क करें" else "Contact us", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.Bold)
-        Text("WhatsApp: +91 89339 79022")
-        Text("Office: Bank of India ke pichhe, Nadi ke paas, Mauranipur, Dist. Jhansi, U.P. - 284204")
-        Button(onClick = onWhatsApp, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Default.Chat, null); Spacer(Modifier.width(8.dp)); Text(if (hindi) "WhatsApp करें" else "Chat on WhatsApp")
-        }
-    }
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
+  item{Text(if(hindi) "हमसे संपर्क करें" else "We're here to help",fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(hindi) "उत्पाद, उपलब्धता, कीमत और बिज़नेस पूछताछ के लिए संपर्क करें।" else "Get in touch for product details, availability, pricing and business enquiries.",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+  item{Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primary)){
+   Column(Modifier.fillMaxWidth().padding(20.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+    Text("DS KUSHWAHA GROUP",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=androidx.compose.ui.graphics.Color.White)
+    Text(if(hindi) "आपकी पूछताछ हमारी टीम तक सीधे पहुँचेगी।" else "Send your enquiry directly to our team.",fontSize=12.sp,color=androidx.compose.ui.graphics.Color.White)
+    Button(onClick=onWhatsApp,modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),colors=ButtonDefaults.buttonColors(containerColor=androidx.compose.ui.graphics.Color(0xFFE0B65C))){Icon(Icons.Default.Chat,null,tint=androidx.compose.ui.graphics.Color(0xFF10284A));Spacer(Modifier.width(8.dp));Text(if(hindi) "WhatsApp पर बात करें" else "Chat on WhatsApp",color=androidx.compose.ui.graphics.Color(0xFF10284A),fontWeight=FontWeight.Bold)}
+   }
+  }}
+  item{Card(shape=RoundedCornerShape(20.dp)){Column(Modifier.fillMaxWidth().padding(17.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+   Row(verticalAlignment=Alignment.CenterVertically){Icon(Icons.Default.Phone,null,tint=MaterialTheme.colorScheme.secondary);Spacer(Modifier.width(10.dp));Column{Text("Customer enquiries",fontWeight=FontWeight.Bold);Text("+91 89339 79022",fontSize=13.sp)}}
+   Divider()
+   Row(verticalAlignment=Alignment.CenterVertically){Icon(Icons.Default.Phone,null,tint=MaterialTheme.colorScheme.secondary);Spacer(Modifier.width(10.dp));Column{Text("Additional contact",fontWeight=FontWeight.Bold);Text("+91 96215 81509",fontSize=13.sp)}}
+   Divider()
+   Row(verticalAlignment=Alignment.Top){Icon(Icons.Default.LocationOn,null,tint=MaterialTheme.colorScheme.secondary);Spacer(Modifier.width(10.dp));Column{Text(if(hindi) "कार्यालय का पता" else "Office address",fontWeight=FontWeight.Bold);Text("Bank of India ke bagal mein, Nadi Pull ke paas, Mauranipur, Uttar Pradesh - 284204",fontSize=12.sp)}}
+  }}}
+  item{Text("Business hours and service availability are confirmed by the team when you contact us.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+ }
 }
-
-
-@Composable
+undefined@Composable
 fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
     var customerName by remember { mutableStateOf("") }
     var favourite by remember { mutableStateOf("DS LIFESTYLE BRANDS") }
@@ -422,4 +440,29 @@ fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
         }
         Text("We do not show invented customer counts, fake reviews or unverified years in business. Coins and offers are preview-only until live orders and admin systems are connected.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+@Composable
+fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
+ val context=LocalContext.current
+ val prefs=remember{context.getSharedPreferences("dsk_preferences",android.content.Context.MODE_PRIVATE)}
+ var customerName by remember{mutableStateOf(prefs.getString("customer_name","")?: "")}
+ var customerMobile by remember{mutableStateOf(prefs.getString("customer_mobile","")?: "")}
+ var favourite by remember{mutableStateOf(prefs.getString("favourite_business","DS LIFESTYLE BRANDS")?: "DS LIFESTYLE BRANDS")}
+ var saved by remember{mutableStateOf(false)}
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(13.dp)){
+  item{Text(if(hindi) "आपकी प्रोफ़ाइल" else "Your account",fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(customerName.isBlank()) if(hindi) "अपना विवरण जोड़कर अनुभव को व्यक्तिगत बनाएं।" else "Add your details for a more personal shopping experience." else if(hindi) "वापसी पर स्वागत है, $customerName" else "Welcome back, $customerName",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+  item{Card(shape=RoundedCornerShape(22.dp)){Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(11.dp)){
+   Text(if(hindi) "व्यक्तिगत विवरण" else "Personal details",fontWeight=FontWeight.Bold,fontSize=17.sp)
+   OutlinedTextField(customerName,{customerName=it;saved=false},modifier=Modifier.fillMaxWidth(),label={Text(if(hindi) "पूरा नाम" else "Full name")},singleLine=true)
+   OutlinedTextField(customerMobile,{customerMobile=it.filter{c->c.isDigit()||c=='+'}.take(13);saved=false},modifier=Modifier.fillMaxWidth(),label={Text(if(hindi) "मोबाइल नंबर" else "Mobile number")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Phone),singleLine=true)
+   Button(onClick={prefs.edit().putString("customer_name",customerName.trim()).putString("customer_mobile",customerMobile.trim()).apply();saved=true},modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(13.dp),enabled=customerName.isNotBlank()&&customerMobile.filter{it.isDigit()}.length>=10){Icon(Icons.Default.Save,null);Spacer(Modifier.width(8.dp));Text(if(hindi) "प्रोफ़ाइल सेव करें" else "Save profile")}
+   if(saved)Text(if(hindi) "आपकी प्रोफ़ाइल इस डिवाइस पर सेव हो गई है।" else "Your profile has been saved on this device.",fontSize=11.sp,color=androidx.compose.ui.graphics.Color(0xFF16834A))
+  }}}
+  item{Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primary)){Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text("DS REWARDS WALLET",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold,fontSize=12.sp);Text("0 Coins",color=androidx.compose.ui.graphics.Color.White,fontSize=29.sp,fontWeight=FontWeight.ExtraBold);Text(if(hindi) "रिवॉर्ड प्रोग्राम सक्रिय होने और ऑर्डर सत्यापित होने पर कॉइन लागू होंगे।" else "Coins will be credited only after verified orders and activation of the rewards programme.",color=androidx.compose.ui.graphics.Color.White,fontSize=11.sp)}}}
+  item{Text(if(hindi) "आपकी पसंदीदा श्रेणी" else "Your favourite business",fontWeight=FontWeight.Bold,fontSize=17.sp)}
+  item{Column(verticalArrangement=Arrangement.spacedBy(7.dp)){listOf("DS PROPERTIES","DS BUILDING MATERIALS","DS SOLAR TECHNOLOGY","DS SMART GADGETS","DS LIFESTYLE BRANDS").forEach{firm->FilterChip(selected=favourite==firm,onClick={favourite=firm;prefs.edit().putString("favourite_business",firm).apply()},label={Text(firm)},modifier=Modifier.fillMaxWidth())}}}
+  item{Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(if(hindi) "आपके लिए" else "Picked for you",fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary);Text("Your ${favourite.removePrefix("DS ")} offers and product updates will be shown here when the live offers service is connected.",fontSize=12.sp)}}}
+  item{Divider();Text(if(hindi) "ऐप की भाषा" else "App language",fontWeight=FontWeight.Bold,fontSize=17.sp);Row(horizontalArrangement=Arrangement.spacedBy(10.dp)){FilterChip(selected=!hindi,onClick={onLanguageSelected(false)},label={Text("English")});FilterChip(selected=hindi,onClick={onLanguageSelected(true)},label={Text("हिन्दी")})}}
+  item{Text("This profile is stored on this device. Live order history, coin balance, coupons and personalised offers require a connected customer account and admin service.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,modifier=Modifier.padding(bottom=12.dp))}
+ }
 }
