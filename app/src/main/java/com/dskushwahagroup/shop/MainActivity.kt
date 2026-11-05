@@ -81,8 +81,8 @@ private fun productDescription(p:String):String = when {
  p.contains("Solar Panel") -> "550W high-efficiency solar module • system sizing and installation quoted separately."
  p.contains("Inverter") -> "Solar inverter options • capacity, phase and compatibility confirmed before order."
  p.contains("Battery") -> "Tubular battery • backup capacity and warranty depend on selected model."
- p.contains("Shirt") -> "Smart everyday style • fabric, colour and available sizes confirmed before dispatch."
  p.contains("T-Shirt") -> "Comfort-fit casual essential • multiple colours and sizes subject to stock."
+ p.contains("Shirt") -> "Smart everyday style • fabric, colour and available sizes confirmed before dispatch."
  p.contains("Jeans") || p.contains("Trousers") || p.contains("Chinos") -> "Everyday fit and finish • check waist size and colour availability."
  p.contains("Smartphone") -> "Model, RAM, storage, warranty and final price confirmed before purchase."
  p.contains("Watch") || p.contains("Earbuds") || p.contains("Speaker") -> "Gadget specifications and warranty depend on the selected model."
@@ -187,7 +187,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                     NavigationBarItem(selected = selectedTab == 1, onClick = { selectedTab = 1; selectedUnit = null },
                         icon = { Icon(Icons.Default.Store, null) }, label = { Text(if (languageHindi) "व्यवसाय" else "Businesses") })
                     NavigationBarItem(selected = selectedTab == 2, onClick = { selectedTab = 2; selectedUnit = null; showCheckout = false },
-                        icon = { Icon(Icons.Default.ShoppingCart, null) }, label = { Text("${if (languageHindi) "ऑर्डर" else "Cart"} (${cart.size})") })
+                        icon = { Icon(Icons.Default.ShoppingCart, null) }, label = { Text("${if (languageHindi) "ऑर्डर" else "Cart"} (${cart.sumOf { it.qty }})") })
                     NavigationBarItem(selected = selectedTab == 3, onClick = { selectedTab = 3; selectedUnit = null },
                         icon = { Icon(Icons.Default.SupportAgent, null) }, label = { Text(if (languageHindi) "संपर्क" else "Contact") })
                     NavigationBarItem(selected = selectedTab == 4, onClick = { selectedTab = 4; selectedUnit = null },
