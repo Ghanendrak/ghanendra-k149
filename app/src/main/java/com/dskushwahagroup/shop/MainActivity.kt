@@ -357,8 +357,8 @@ fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
         }
         Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
             Column(Modifier.padding(15.dp)) {
-                Text(if (customerName.isBlank()) "Welcome offer preview" else "Hello, \${customerName}!", fontWeight = FontWeight.Bold)
-                Text("Your \${favourite.removePrefix("DS ")} deals will appear here. Coupon redemption and live personalised offers require the connected admin store.", fontSize = 12.sp)
+                Text(if (customerName.isBlank()) "Welcome offer preview" else "Hello, $customerName!", fontWeight = FontWeight.Bold)
+                Text("Your ${favourite.removePrefix("DS ")} deals will appear here. Coupon redemption and live personalised offers require the connected admin store.", fontSize = 12.sp)
             }
         }
         Divider()
