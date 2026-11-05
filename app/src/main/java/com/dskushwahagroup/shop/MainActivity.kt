@@ -24,11 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.net.URLEncoder
 
+private fun demoPrice(p:String)=mapOf("Residential Plot" to 250000,"Commercial Plot" to 450000,"Agricultural Land" to 180000,"House / Apartment" to 2500000,"Cement" to 390,"TMT / Steel" to 68,"Bricks" to 9,"Sand & Aggregate" to 1800,"Solar Panel" to 12500,"Solar Inverter" to 18500,"Solar Street Light" to 6500,"Solar Pump" to 32000,"Smartphone" to 12999,"Smart Watch" to 1999,"Bluetooth Earbuds" to 1499,"Home Electronics" to 4999,"Men's Apparel" to 799,"Women's Apparel" to 899,"Footwear" to 999,"Accessories" to 399)[p]?:999
+
 private const val WHATSAPP_NUMBER = "918933979022"
 
 data class UnitInfo(val name: String, val hindi: String, val detail: String, val products: List<String>)
 
-data class CartLine(val unit: String, val product: String, val qty: Int)
+data class CartLine(val unit: String, val product: String, val price: Int, val qty: Int)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,10 +124,10 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                 0 -> HomeScreen(languageHindi, units, onExplore = { selectedTab = 1 }, onSelectUnit = { selectedUnit = it; selectedTab = 1 })
                 1 -> if (selectedUnit == null) BusinessScreen(units, languageHindi) { selectedUnit = it }
                      else ProductScreen(selectedUnit!!, languageHindi, onBack = { selectedUnit = null }) { product ->
-                         cart.add(CartLine(selectedUnit!!.name, product, 1))
+                         val i=cart.indexOfFirst { it.unit==selectedUnit!!.name && it.product==product }
+                         if(i>=0) cart[i]=cart[i].copy(qty=cart[i].qty+1) else cart.add(CartLine(selectedUnit!!.name,product,demoPrice(product),1))
                      }
-                2 -> CartScreen(cart, customerName, { customerName = it }, mobile, { mobile = it },
-                    address, { address = it }, languageHindi, sendWhatsApp)
+                2 -> CartScreen(cart, { cart.remove(it) }, { line,delta -> val i=cart.indexOf(line); if(i>=0){val q=line.qty+delta;if(q<=0)cart.removeAt(i) else cart[i]=line.copy(qty=q)} }, customerName, { customerName=it }, mobile, { mobile=it }, address, { address=it }, languageHindi, sendWhatsApp)
                 3 -> ContactScreen(languageHindi) { sendWhatsApp("Hello DS KUSHWAHA GROUP, I need more information about your businesses.") }
                 else -> ProfileScreen(languageHindi, onLanguageSelected = { selectLanguage(it) })
             }
@@ -228,60 +230,38 @@ fun BusinessScreen(units: List<UnitInfo>, hindi: Boolean, onSelect: (UnitInfo) -
 
 @Composable
 fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (String) -> Unit) {
-    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        item {
-            TextButton(onClick = onBack) { Text("← ${if (hindi) "वापस" else "Back"}") }
-            Text(unit.name, fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(if (hindi) "उत्पाद चुनें और पूछताछ सूची में जोड़ें" else "Select an item and add it to your enquiry cart")
-            Text(if (hindi) "कीमत और उपलब्धता WhatsApp पर पुष्टि होगी।" else "Price and availability will be confirmed on WhatsApp.",
-                fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        items(unit.products) { product ->
-            Card(shape = RoundedCornerShape(14.dp)) {
-                Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) { Text(product, fontWeight = FontWeight.SemiBold); Text("Price on request", fontSize = 12.sp) }
-                    Button(onClick = { onAdd(product) }) { Icon(Icons.Default.Add, null); Text(if (hindi) "जोड़ें" else "Add") }
-                }
-            }
-        }
-    }
+ val prices=mapOf("Residential Plot" to 250000,"Commercial Plot" to 450000,"Agricultural Land" to 180000,"House / Apartment" to 2500000,"Cement" to 390,"TMT / Steel" to 68,"Bricks" to 9,"Sand & Aggregate" to 1800,"Solar Panel" to 12500,"Solar Inverter" to 18500,"Solar Street Light" to 6500,"Solar Pump" to 32000,"Smartphone" to 12999,"Smart Watch" to 1999,"Bluetooth Earbuds" to 1499,"Home Electronics" to 4999,"Men's Apparel" to 799,"Women's Apparel" to 899,"Footwear" to 999,"Accessories" to 399)
+ LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+ item { TextButton(onClick=onBack){Text("← Back")}; Text(unit.name,fontSize=22.sp,fontWeight=FontWeight.ExtraBold); Text("Popular products • Demo catalogue") }
+ items(unit.products){p-> Card(shape=RoundedCornerShape(18.dp),elevation=CardDefaults.cardElevation(3.dp)){Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically){
+ Surface(Modifier.size(68.dp),shape=RoundedCornerShape(14.dp),color=MaterialTheme.colorScheme.primaryContainer){Box(contentAlignment=Alignment.Center){Icon(Icons.Default.ShoppingBag,null,modifier=Modifier.size(32.dp))}}
+ Spacer(Modifier.width(12.dp)); Column(Modifier.weight(1f)){Text(p,fontWeight=FontWeight.Bold);Text("₹${prices[p]?:999}",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text("Demo price • confirmation required",fontSize=10.sp)}
+ FilledTonalButton(onClick={onAdd(p)}){Icon(Icons.Default.Add,null);Text("Add")}
+ }}}
+ }
 }
 
 @Composable
-fun CartScreen(
-    cart: List<CartLine>, name: String, onName: (String) -> Unit, mobile: String, onMobile: (String) -> Unit,
-    address: String, onAddress: (String) -> Unit, hindi: Boolean, sendWhatsApp: (String) -> Unit
-) {
-    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        item { Text(if (hindi) "आपकी पूछताछ सूची" else "Your enquiry cart", fontSize = 21.sp, fontWeight = FontWeight.Bold) }
-        if (cart.isEmpty()) item { Text(if (hindi) "अभी सूची खाली है। व्यवसाय चुनकर उत्पाद जोड़ें।" else "Your cart is empty. Choose a business and add items.") }
-        items(cart) { line ->
-            Card {
-                Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) { Text(line.product, fontWeight = FontWeight.Bold); Text(line.unit, fontSize = 12.sp) }
-                    Text("× ${line.qty}")
-                }
-            }
-        }
-        item { Divider(); Text(if (hindi) "ग्राहक की जानकारी" else "Customer details", fontWeight = FontWeight.Bold, fontSize = 18.sp) }
-        item { OutlinedTextField(name, onName, label = { Text(if (hindi) "आपका नाम" else "Your name") }, modifier = Modifier.fillMaxWidth()) }
-        item { OutlinedTextField(mobile, onMobile, label = { Text(if (hindi) "मोबाइल नंबर" else "Mobile number") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth()) }
-        item { OutlinedTextField(address, onAddress, label = { Text(if (hindi) "डिलीवरी पता / शहर" else "Delivery address / city") },
-            modifier = Modifier.fillMaxWidth(), minLines = 2) }
-        item {
-            Button(
-                onClick = {
-                    val lines = cart.joinToString("\n") { "• ${it.product} (${it.unit}) x${it.qty}" }
-                    val message = "DS KUSHWAHA GROUP - Order / Enquiry\nCustomer: $name\nMobile: $mobile\nAddress: $address\nItems:\n$lines\nPlease confirm price, availability, delivery and payment details."
-                    sendWhatsApp(message)
-                },
-                enabled = cart.isNotEmpty() && name.isNotBlank() && mobile.length >= 10,
-                modifier = Modifier.fillMaxWidth()
-            ) { Icon(Icons.Default.Send, null); Spacer(Modifier.width(8.dp)); Text(if (hindi) "WhatsApp पर भेजें" else "Send enquiry on WhatsApp") }
-        }
-        item { Text(if (hindi) "अभी यह ऐप WhatsApp enquiry लेता है; ऑनलाइन भुगतान और लाइव डिलीवरी ट्रैकिंग बाद में merchant/API setup के बाद जोड़ी जाएगी।" else "This version sends enquiries through WhatsApp. Online payment and live delivery tracking require merchant/API setup.", fontSize = 11.sp) }
-    }
+fun CartScreen(cart: List<CartLine>, onRemove:(CartLine)->Unit, onQuantity:(CartLine,Int)->Unit, name:String,onName:(String)->Unit,mobile:String,onMobile:(String)->Unit,address:String,onAddress:(String)->Unit,hindi:Boolean,sendWhatsApp:(String)->Unit){
+ val total=cart.sumOf{it.price*it.qty}
+ LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+ item{Text("My Cart",fontSize=23.sp,fontWeight=FontWeight.ExtraBold)}
+ if(cart.isEmpty())item{Text("Your cart is empty. Explore products to get started.")}
+ items(cart){line->Card(shape=RoundedCornerShape(18.dp)){Row(Modifier.fillMaxWidth().padding(12.dp),verticalAlignment=Alignment.CenterVertically){
+ Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹${line.price*line.qty}",fontWeight=FontWeight.Bold)}
+ IconButton(onClick={onQuantity(line,-1)}){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
+ Text("${line.qty}",fontWeight=FontWeight.Bold)
+ IconButton(onClick={onQuantity(line,1)}){Icon(Icons.Default.AddCircle,"Increase")}
+ IconButton(onClick={onRemove(line)}){Icon(Icons.Default.DeleteOutline,"Remove")}
+ }}}
+ if(cart.isNotEmpty())item{Text("Subtotal (demo): ₹$total",fontSize=20.sp,fontWeight=FontWeight.ExtraBold)}
+ item{Divider();Text("Customer details",fontWeight=FontWeight.Bold,fontSize=18.sp)}
+ item{OutlinedTextField(name,onName,label={Text("Your name")},modifier=Modifier.fillMaxWidth())}
+ item{OutlinedTextField(mobile,onMobile,label={Text("Mobile number")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Phone),modifier=Modifier.fillMaxWidth())}
+ item{OutlinedTextField(address,onAddress,label={Text("Delivery address / city")},modifier=Modifier.fillMaxWidth(),minLines=2)}
+ item{Button(onClick={val lines=cart.joinToString("\n"){"• ${it.product} x${it.qty} = ₹${it.price*it.qty}"};sendWhatsApp("DS KUSHWAHA GROUP Order\nCustomer: $name\nMobile: $mobile\nAddress: $address\n$lines\nDemo subtotal: ₹$total\nPlease confirm final price and availability.")},enabled=cart.isNotEmpty()&&name.isNotBlank()&&mobile.length>=10,modifier=Modifier.fillMaxWidth()){Icon(Icons.Default.Send,null);Text("  Place order / WhatsApp")}}
+ item{Text("All displayed prices are demo prices. Final price and availability will be confirmed by seller.",fontSize=11.sp)}
+ }
 }
 
 @Composable
