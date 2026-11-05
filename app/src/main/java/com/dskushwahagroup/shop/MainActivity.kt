@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.net.URLEncoder
@@ -66,7 +67,13 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
     var customerName by remember { mutableStateOf("") }
     var mobile by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    var languageHindi by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val preferences = remember { context.getSharedPreferences("dsk_preferences", android.content.Context.MODE_PRIVATE) }
+    var languageHindi by remember { mutableStateOf(preferences.getBoolean("language_hindi", false)) }
+    fun selectLanguage(hindi: Boolean) {
+        languageHindi = hindi
+        preferences.edit().putBoolean("language_hindi", hindi).apply()
+    }
 
     MaterialTheme(colorScheme = lightColorScheme(
         primary = androidx.compose.ui.graphics.Color(0xFF10284A),
@@ -93,11 +100,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                             }
                         }
                     },
-                    actions = {
-                        TextButton(onClick = { languageHindi = !languageHindi }) {
-                            Text(if (languageHindi) "EN" else "हिंदी", color = MaterialTheme.colorScheme.secondary)
-                        }
-                    }
+                    actions = { }
                 )
             },
             bottomBar = {
@@ -110,6 +113,8 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                         icon = { Icon(Icons.Default.ShoppingCart, null) }, label = { Text("${if (languageHindi) "ऑर्डर" else "Cart"} (${cart.size})") })
                     NavigationBarItem(selected = selectedTab == 3, onClick = { selectedTab = 3; selectedUnit = null },
                         icon = { Icon(Icons.Default.SupportAgent, null) }, label = { Text(if (languageHindi) "संपर्क" else "Contact") })
+                    NavigationBarItem(selected = selectedTab == 4, onClick = { selectedTab = 4; selectedUnit = null },
+                        icon = { Icon(Icons.Default.Person, null) }, label = { Text(if (languageHindi) "प्रोफ़ाइल" else "Profile") })
                 }
             }
         ) { padding ->
@@ -121,7 +126,8 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                      }
                 2 -> CartScreen(cart, customerName, { customerName = it }, mobile, { mobile = it },
                     address, { address = it }, languageHindi, sendWhatsApp)
-                else -> ContactScreen(languageHindi) { sendWhatsApp("Hello DS KUSHWAHA GROUP, I need more information about your businesses.") }
+                3 -> ContactScreen(languageHindi) { sendWhatsApp("Hello DS KUSHWAHA GROUP, I need more information about your businesses.") }
+                else -> ProfileScreen(languageHindi, onLanguageSelected = { selectLanguage(it) })
             }
         }
     }
@@ -288,5 +294,70 @@ fun ContactScreen(hindi: Boolean, onWhatsApp: () -> Unit) {
         Button(onClick = onWhatsApp, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Default.Chat, null); Spacer(Modifier.width(8.dp)); Text(if (hindi) "WhatsApp करें" else "Chat on WhatsApp")
         }
+    }
+}
+
+
+@Composable
+fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
+    Column(
+        Modifier.fillMaxSize().padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(if (hindi) "आपकी प्रोफ़ाइल" else "Your Profile", fontSize = 23.sp, fontWeight = FontWeight.Bold)
+        Card(shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(34.dp))
+                Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                Text(if (hindi) "अपनी पसंद की भाषा चुनें" else "Choose your preferred language")
+                Text(
+                    if (hindi) "ऐप के मेन्यू, प्रोडक्ट और ब्राउज़िंग स्क्रीन आपकी चुनी हुई भाषा में दिखाई देंगी।"
+                    else "App menus, product browsing and available content will appear in your selected language.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Text(if (hindi) "ऐप की भाषा" else "App Language", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Card(
+            onClick = { onLanguageSelected(false) },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (!hindi) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("🇬🇧", fontSize = 24.sp)
+                Spacer(Modifier.width(14.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("English", fontWeight = FontWeight.Bold)
+                    Text(if (hindi) "Default browsing language" else "Default language", fontSize = 12.sp)
+                }
+                if (!hindi) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
+            }
+        }
+        Card(
+            onClick = { onLanguageSelected(true) },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (hindi) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("🇮🇳", fontSize = 24.sp)
+                Spacer(Modifier.width(14.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("हिन्दी", fontWeight = FontWeight.Bold)
+                    Text("Hindi", fontSize = 12.sp)
+                }
+                if (hindi) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
+            }
+        }
+        Text(
+            if (hindi) "आपकी भाषा की पसंद इस डिवाइस पर सेव रहेगी।"
+            else "Your language preference will be saved on this device and remembered next time you open the app.",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
