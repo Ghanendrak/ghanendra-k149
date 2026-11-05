@@ -205,102 +205,68 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
 
 @Composable
 fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onSelectUnit: (UnitInfo) -> Unit) {
-    var searchText by remember { mutableStateOf("") }
-    val visibleUnits = units.filter {
-        it.name.contains(searchText, ignoreCase = true) ||
-        it.hindi.contains(searchText, ignoreCase = true) ||
-        it.detail.contains(searchText, ignoreCase = true)
+ var searchText by remember { mutableStateOf("") }
+ val visibleUnits=units.filter{it.name.contains(searchText,true)||it.hindi.contains(searchText,true)||it.detail.contains(searchText,true)}
+ val bannerState= rememberLazyListState()
+ val titles=listOf("BIG SAVINGS. BETTER CHOICES.","POWER YOUR HOME WITH SOLAR.","STYLE THAT SPEAKS FOR YOU.","BUILD BETTER. LIVE BETTER.")
+ val subtitles=listOf("Explore five business verticals in one place.","Panels, inverters and batteries for your energy needs.","Discover apparel, footwear and everyday essentials.","Property and building materials for your next project.")
+ val images=listOf("photo-1497366216548-37526070297c","photo-1508514177221-188b1cf16e9d","photo-1529139574466-a303027c1d8b","photo-1600585154340-be6161a56a0c")
+ LaunchedEffect(Unit){while(true){delay(3800);bannerState.animateScrollToItem((bannerState.firstVisibleItemIndex+1)%titles.size)}}
+ LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(16.dp)){
+  item{
+   Row(Modifier.fillMaxWidth().padding(top=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween){
+    Column(verticalArrangement=Arrangement.spacedBy(2.dp)){Text(if(hindi) "नमस्ते 👋" else "WELCOME TO",fontSize=10.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.secondary);Text("DS KUSHWAHA GROUP",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(hindi) "एक समूह • अनेक समाधान" else "One group. Multiple solutions.",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+    Surface(shape=RoundedCornerShape(15.dp),color=MaterialTheme.colorScheme.primary){Text("DSKG",Modifier.padding(horizontal=13.dp,vertical=12.dp),fontWeight=FontWeight.ExtraBold,color=androidx.compose.ui.graphics.Color(0xFFFFD98A))}
+   }
+  }
+  item{
+   LazyRow(state=bannerState,horizontalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(end=5.dp)){
+    items(titles.size){i->
+     Card(shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(220.dp)){
+      Box(Modifier.fillMaxSize()){
+       AsyncImage(model="https://images.unsplash.com/${images[i]}?w=1000&auto=format&fit=crop&q=88",contentDescription=null,modifier=Modifier.fillMaxSize(),contentScale=androidx.compose.ui.layout.ContentScale.Crop)
+       Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xC910284A)))
+       Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.SpaceBetween){
+        Text("DS KUSHWAHA GROUP  •  EXCLUSIVE",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
+        Column(verticalArrangement=Arrangement.spacedBy(7.dp)){Text(titles[i],color=androidx.compose.ui.graphics.Color.White,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,lineHeight=28.sp);Text(subtitles[i],color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp)}
+        Button(onClick=onExplore,colors=ButtonDefaults.buttonColors(containerColor=androidx.compose.ui.graphics.Color(0xFFE0B65C)),shape=RoundedCornerShape(13.dp)){Text(if(hindi) "अभी देखें" else "Explore now",color=androidx.compose.ui.graphics.Color(0xFF10284A),fontWeight=FontWeight.Bold);Icon(Icons.Default.ArrowForward,null,tint=androidx.compose.ui.graphics.Color(0xFF10284A))}
+       }
+      }
+     }
     }
-    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        item {
-            val bannerState = rememberLazyListState()
-            val titles = listOf("BIG SAVINGS. BETTER CHOICES.", "POWER YOUR HOME WITH SOLAR.", "STYLE THAT SPEAKS FOR YOU.", "BUILD BETTER. LIVE BETTER.")
-            val subtitles = listOf("Explore all five DS business categories.", "Panels, inverters and batteries for your needs.", "Discover shirts, T-shirts and daily essentials.", "Property and building material enquiries made easy.")
-            LaunchedEffect(Unit) { while(true) { delay(3200); bannerState.animateScrollToItem((bannerState.firstVisibleItemIndex+1)%titles.size) } }
-            LazyRow(state=bannerState,horizontalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(end=4.dp)) {
-                items(titles.size) { index ->
-                    Card(shape=RoundedCornerShape(24.dp),modifier=Modifier.width(310.dp).height(205.dp),colors=CardDefaults.cardColors(containerColor=androidx.compose.ui.graphics.Color(0xFF10284A))) {
-                        Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.SpaceBetween) {
-                            Text("DS KUSHWAHA GROUP  •  EXCLUSIVE",color=androidx.compose.ui.graphics.Color(0xFFE2BD70),fontSize=11.sp,fontWeight=FontWeight.Bold)
-                            Column { Text(titles[index],color=androidx.compose.ui.graphics.Color.White,fontSize=23.sp,fontWeight=FontWeight.ExtraBold,lineHeight=27.sp);Text(subtitles[index],color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
-                            Button(onClick=onExplore,colors=ButtonDefaults.buttonColors(containerColor=androidx.compose.ui.graphics.Color(0xFFC69A43))){Text("EXPLORE NOW",color=androidx.compose.ui.graphics.Color(0xFF10284A),fontWeight=FontWeight.Bold)}
-                        }
-                    }
-                }
-            }
-        }
-        item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(listOf("✨ Special Deals", "🏷️ Demo Offers", "🚚 Easy Enquiry")) { label ->
-                    Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.secondaryContainer) {
-                        Text(label, Modifier.padding(horizontal = 14.dp, vertical = 10.dp), fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-        item {
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(22.dp)) {
-                Column(Modifier.padding(22.dp)) {
-                    Text("DS KUSHWAHA GROUP", color = androidx.compose.ui.graphics.Color.White, fontSize = 23.sp, fontWeight = FontWeight.ExtraBold)
-                    Spacer(Modifier.height(8.dp))
-                    Text(if (hindi) "एक समूह • पाँच व्यावसायिक सेवाएँ" else "One Group • Five Business Verticals",
-                        color = androidx.compose.ui.graphics.Color.White, fontSize = 15.sp)
-                    Spacer(Modifier.height(16.dp))
-                    Button(onClick = onExplore, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
-                        Text(if (hindi) "व्यवसाय देखें" else "Explore Businesses")
-                    }
-                }
-            }
-        }
-        item {
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                placeholder = { Text(if (hindi) "फर्म या सेवा खोजें" else "Search firms and services") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-            )
-        }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-            ) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(if (hindi) "DS KUSHWAHA GROUP विशेष" else "DS KUSHWAHA GROUP EXCLUSIVE", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-                    Text(if (hindi) "हमारी पाँचों फर्म की सेवाएँ एक ही ऐप में।" else "Explore products and services across all five business units.", fontSize = 14.sp)
-                    Text(if (hindi) "ऑफर और कूपन जल्द उपलब्ध होंगे" else "Offers & coupons coming soon", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                }
-            }
-        }
-        item { Text(if (hindi) "हमारी व्यावसायिक इकाइयाँ" else "Our Business Units", fontSize = 19.sp, fontWeight = FontWeight.Bold) }
-        item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(end = 4.dp)) {
-                items(visibleUnits) { unit ->
-                    Card(
-                        onClick = { onSelectUnit(unit) },
-                        modifier = Modifier.width(158.dp).height(112.dp),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                    ) {
-                        Column(
-                            Modifier.fillMaxSize().padding(12.dp),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Icon(Icons.Default.Business, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(27.dp))
-                            Text(unit.name, fontWeight = FontWeight.Bold, fontSize = 12.sp, lineHeight = 15.sp)
-                            Text(if (hindi) "देखें  ›" else "Explore  ›", color = MaterialTheme.colorScheme.secondary, fontSize = 11.sp)
-                        }
-                    }
-                }
-            }
-        }
-        item { Text(if (hindi) "ऑर्डर और पूछताछ WhatsApp पर भेजें" else "Send orders and enquiries directly on WhatsApp", fontSize = 13.sp) }
+   }
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.Center){repeat(titles.size){i->Surface(Modifier.padding(horizontal=3.dp).size(if(bannerState.firstVisibleItemIndex==i)18.dp else 6.dp,6.dp),shape=RoundedCornerShape(50),color=if(bannerState.firstVisibleItemIndex==i)MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant){} }}
+  }
+  item{
+   OutlinedTextField(searchText,{searchText=it},modifier=Modifier.fillMaxWidth(),singleLine=true,shape=RoundedCornerShape(16.dp),placeholder={Text(if(hindi) "व्यवसाय या सेवा खोजें" else "Search businesses or services")},leadingIcon={Icon(Icons.Default.Search,null)})
+  }
+  item{
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+    listOf("Easy enquiries","Customer support","Simple ordering").forEach{label->Surface(Modifier.weight(1f),shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.surfaceVariant){Column(Modifier.padding(vertical=10.dp,horizontal=4.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)){Icon(Icons.Default.CheckCircle,null,tint=MaterialTheme.colorScheme.secondary,modifier=Modifier.size(18.dp));Text(label,fontSize=9.sp,fontWeight=FontWeight.SemiBold)}}}
+   }
+  }
+  item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(if(hindi) "हमारे व्यवसाय" else "Shop by business",fontSize=20.sp,fontWeight=FontWeight.ExtraBold);TextButton(onClick=onExplore){Text(if(hindi) "सभी देखें" else "View all")}}}
+  items(visibleUnits){unit->
+   Card(onClick={onSelectUnit(unit)},shape=RoundedCornerShape(20.dp),elevation=CardDefaults.cardElevation(2.dp)){
+    Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically){
+     Surface(shape=RoundedCornerShape(15.dp),color=MaterialTheme.colorScheme.primaryContainer,modifier=Modifier.size(54.dp)){Box(contentAlignment=Alignment.Center){Icon(Icons.Default.Store,null,tint=MaterialTheme.colorScheme.primary,modifier=Modifier.size(27.dp))}}
+     Spacer(Modifier.width(13.dp))
+     Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)){Text(unit.name,fontWeight=FontWeight.ExtraBold,fontSize=13.sp);Text(unit.detail,fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant);Text("${unit.products.size} catalogue items",fontSize=10.sp,color=MaterialTheme.colorScheme.secondary)}
+     Icon(Icons.Default.ChevronRight,null,tint=MaterialTheme.colorScheme.secondary)
     }
+   }
+  }
+  if(visibleUnits.isEmpty())item{Text(if(hindi) "कोई व्यवसाय नहीं मिला।" else "No matching business found.")}
+  item{
+   Card(shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primary)){
+    Row(Modifier.fillMaxWidth().padding(18.dp),verticalAlignment=Alignment.CenterVertically){
+     Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(if(hindi) "मदद चाहिए?" else "Need assistance?",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold);Text(if(hindi) "उत्पाद, उपलब्धता या कीमत के लिए हमारी टीम से संपर्क करें।" else "Talk to our team about products, availability or a custom quote.",color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp)}
+     Icon(Icons.Default.SupportAgent,null,tint=androidx.compose.ui.graphics.Color.White,modifier=Modifier.size(34.dp))
+    }
+   }
+  }
+  item{Text("Sample catalogue • Product availability, rates and delivery are confirmed by the DS team.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,modifier=Modifier.padding(bottom=12.dp))}
+ }
 }
 
 @Composable
