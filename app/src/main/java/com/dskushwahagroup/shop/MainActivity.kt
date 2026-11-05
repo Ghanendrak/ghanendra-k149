@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,7 +28,70 @@ import androidx.compose.ui.unit.sp
 import java.net.URLEncoder
 import coil.compose.AsyncImage
 
-private fun demoPrice(p:String)=mapOf("Residential Plot" to 250000,"Commercial Plot" to 450000,"Agricultural Land" to 180000,"House / Apartment" to 2500000,"Cement" to 390,"TMT / Steel" to 68,"Bricks" to 9,"Sand & Aggregate" to 1800,"Solar Panel" to 12500,"Solar Inverter" to 18500,"Solar Street Light" to 6500,"Solar Pump" to 32000,"Smartphone" to 12999,"Smart Watch" to 1999,"Bluetooth Earbuds" to 1499,"Home Electronics" to 4999,"Men's Apparel" to 799,"Women's Apparel" to 899,"Footwear" to 999,"Accessories" to 399)[p]?:999
+private fun demoPrice(p:String)=mapOf(
+ "Residential Plot" to 250000, "Commercial Plot" to 450000, "Agricultural Land" to 180000, "House / Apartment" to 2500000,
+ "Cement 50 kg Bag" to 390, "TMT Sariya" to 68, "Construction Sand" to 1800, "Red Bricks" to 9, "Stone Aggregate" to 1600,
+ "Solar Panel 550W" to 12500, "Solar Inverter" to 18500, "Tubular Battery" to 12500, "Solar Water Pump" to 32000, "Home UPS" to 6500, "Solar DC Wire" to 45, "Mounting Structure" to 4500,
+ "Android Smartphone" to 12999, "Smart Watch" to 1999, "Bluetooth Earbuds" to 1499, "Bluetooth Speaker" to 2499, "Home Electronics" to 4999,
+ "Premium Formal Shirt" to 1199, "Premium Polo T-Shirt" to 899, "Crew Neck T-Shirt" to 599, "Slim Fit Jeans" to 1499, "Formal Trousers" to 1299, "Casual Chinos" to 1199, "Denim Jacket" to 1999, "Winter Jacket" to 2499, "Casual Footwear" to 999, "Fashion Accessories" to 399
+)[p]?:999
+
+private fun productMrp(p:String):Int = mapOf(
+ "Premium Formal Shirt" to 1599, "Premium Polo T-Shirt" to 1199, "Crew Neck T-Shirt" to 799, "Slim Fit Jeans" to 1999, "Formal Trousers" to 1699, "Casual Chinos" to 1599, "Denim Jacket" to 2499, "Winter Jacket" to 3199, "Casual Footwear" to 1299, "Fashion Accessories" to 599,
+ "Cement 50 kg Bag" to 430, "TMT Sariya" to 74, "Construction Sand" to 2000, "Red Bricks" to 11, "Solar Panel 550W" to 14500, "Solar Inverter" to 21000, "Tubular Battery" to 14500, "Solar Water Pump" to 36000, "Home UPS" to 7900, "Solar DC Wire" to 55, "Mounting Structure" to 5200
+)[p] ?: demoPrice(p)
+
+private fun productPhoto(p:String):String {
+ val id=when {
+  p.contains("Residential Plot") || p.contains("Agricultural Land") -> "photo-1500382017468-9049fed747ef"
+  p.contains("Commercial Plot") -> "photo-1486406146926-c627a92ad1ab"
+  p.contains("House") || p.contains("Apartment") -> "photo-1600585154340-be6161a56a0c"
+  p.contains("Cement") -> "photo-1518709268805-4e9042af9f23"
+  p.contains("TMT") || p.contains("Sariya") -> "photo-1504917595217-d4dc5ebe6122"
+  p.contains("Sand") -> "photo-1504307651254-35680f356dfd"
+  p.contains("Bricks") -> "photo-1590725140246-20acb1fbe6e2"
+  p.contains("Aggregate") || p.contains("Stone") -> "photo-1518709268805-4e9042af9f23"
+  p.contains("Solar Panel") -> "photo-1508514177221-188b1cf16e9d"
+  p.contains("Inverter") -> "photo-1621905251189-08b45d6a269e"
+  p.contains("Battery") -> "photo-1609091839311-d5365f9ff1c5"
+  p.contains("Pump") -> "photo-1572120360610-d971b9d7767c"
+  p.contains("Home UPS") -> "photo-1558008258-3256797b43f3"
+  p.contains("Solar DC Wire") -> "photo-1558618666-fcd25c85cd64"
+  p.contains("Mounting Structure") -> "photo-1497440001374-f26997328c1b"
+  p.contains("Formal Shirt") -> "photo-1596755094514-f87e34085b2c"
+  p.contains("Polo T-Shirt") -> "photo-1581655353564-df123a1eb820"
+  p.contains("Crew Neck T-Shirt") -> "photo-1521572163474-6864f9cf17ab"
+  p.contains("Jeans") -> "photo-1542272604-787c3835535d"
+  p.contains("Trousers") -> "photo-1473966968600-fa801b869a1a"
+  p.contains("Chinos") -> "photo-1515886657613-9f3515b0c78f"
+  p.contains("Denim Jacket") -> "photo-1551028719-00167b16eac5"
+  p.contains("Winter Jacket") -> "photo-1544923246-77307dd654cb"
+  p.contains("Footwear") -> "photo-1542291026-7eec264c27ff"
+  p.contains("Accessories") -> "photo-1523170335258-f5ed11844a49"
+  p.contains("Smartphone") -> "photo-1511707171634-5f897ff02aa9"
+  p.contains("Watch") -> "photo-1523275335684-37898b6baf30"
+  p.contains("Earbuds") -> "photo-1606220945770-b5b6c2c55bf1"
+  p.contains("Speaker") -> "photo-1608043152269-423dbba4e7e1"
+  else -> "photo-1498049794561-7780e7231661"
+ }
+ return "https://images.unsplash.com/$id?w=1000&auto=format&fit=crop&q=88"
+}
+
+private fun productDescription(p:String):String = when {
+ p.contains("Solar Panel") -> "550W high-efficiency solar module • system sizing and installation quoted separately."
+ p.contains("Inverter") -> "Solar inverter options • capacity, phase and compatibility confirmed before order."
+ p.contains("Battery") -> "Tubular battery • backup capacity and warranty depend on selected model."
+ p.contains("Shirt") -> "Smart everyday style • fabric, colour and available sizes confirmed before dispatch."
+ p.contains("T-Shirt") -> "Comfort-fit casual essential • multiple colours and sizes subject to stock."
+ p.contains("Jeans") || p.contains("Trousers") || p.contains("Chinos") -> "Everyday fit and finish • check waist size and colour availability."
+ p.contains("Smartphone") -> "Model, RAM, storage, warranty and final price confirmed before purchase."
+ p.contains("Watch") || p.contains("Earbuds") || p.contains("Speaker") -> "Gadget specifications and warranty depend on the selected model."
+ p.contains("Cement") -> "50 kg bag • brand, grade, quantity and delivery charges confirmed on enquiry."
+ p.contains("TMT") -> "Steel rate varies by grade, diameter, quantity and market price."
+ p.contains("Sand") || p.contains("Aggregate") || p.contains("Bricks") -> "Bulk material • quantity, quality and transport quoted by location."
+ p.contains("Plot") || p.contains("Land") || p.contains("House") -> "Property details, title, location and site visit subject to verification."
+ else -> "Product details, brand, stock and final quote will be confirmed before order."
+}
 
 private const val WHATSAPP_NUMBER = "918933979022"
 
@@ -260,92 +324,76 @@ fun BusinessScreen(units: List<UnitInfo>, hindi: Boolean, onSelect: (UnitInfo) -
 
 @Composable
 fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (String) -> Unit) {
- val prices = mapOf("Cement 50 kg Bag" to 390, "TMT Sariya" to 68, "Construction Sand" to 1800, "Red Bricks" to 9, "Stone Aggregate" to 1600, "Solar Panel 550W" to 12500, "Solar Inverter" to 18500, "Tubular Battery" to 12500, "Solar Water Pump" to 32000, "Home UPS" to 6500, "Solar DC Wire" to 45, "Mounting Structure" to 4500, "Premium Formal Shirt" to 1199, "Premium Polo T-Shirt" to 899, "Crew Neck T-Shirt" to 599, "Slim Fit Jeans" to 1499, "Formal Trousers" to 1299, "Casual Chinos" to 1199, "Denim Jacket" to 1999, "Winter Jacket" to 2499, "Casual Footwear" to 999, "Fashion Accessories" to 399, "Android Smartphone" to 12999, "Smart Watch" to 1999, "Bluetooth Earbuds" to 1499, "Bluetooth Speaker" to 2499, "Home Electronics" to 4999)
- val mrps = mapOf("Premium Formal Shirt" to 1599, "Premium Polo T-Shirt" to 1199, "Crew Neck T-Shirt" to 799, "Slim Fit Jeans" to 1999, "Formal Trousers" to 1699, "Casual Chinos" to 1599, "Denim Jacket" to 2499, "Winter Jacket" to 3199, "Casual Footwear" to 1299, "Fashion Accessories" to 599, "Cement 50 kg Bag" to 430, "TMT Sariya" to 74, "Construction Sand" to 2000, "Red Bricks" to 11, "Solar Panel 550W" to 14500, "Solar Inverter" to 21000, "Tubular Battery" to 14500, "Solar Water Pump" to 36000, "Home UPS" to 7900, "Solar DC Wire" to 55, "Mounting Structure" to 5200)
- fun photoFor(p: String): String {
-  val id = when {
-   p.contains("Residential Plot") || p.contains("Agricultural Land") -> "photo-1500382017468-9049fed747ef"
-   p.contains("Commercial Plot") -> "photo-1486406146926-c627a92ad1ab"
-   p.contains("House") || p.contains("Apartment") -> "photo-1600585154340-be6161a56a0c"
-   p.contains("Cement") -> "photo-1518709268805-4e9042af9f23"
-   p.contains("TMT") || p.contains("Sariya") -> "photo-1504917595217-d4dc5ebe6122"
-   p.contains("Sand") -> "photo-1504307651254-35680f356dfd"
-   p.contains("Bricks") -> "photo-1590725140246-20acb1fbe6e2"
-   p.contains("Aggregate") || p.contains("Stone") -> "photo-1518709268805-4e9042af9f23"
-   p.contains("Solar Panel") -> "photo-1508514177221-188b1cf16e9d"
-   p.contains("Inverter") -> "photo-1621905251189-08b45d6a269e"
-   p.contains("Battery") -> "photo-1609091839311-d5365f9ff1c5"
-   p.contains("Pump") -> "photo-1572120360610-d971b9d7767c"
-   p.contains("Home UPS") -> "photo-1558008258-3256797b43f3"
-   p.contains("Solar DC Wire") -> "photo-1558618666-fcd25c85cd64"
-   p.contains("Mounting Structure") -> "photo-1497440001374-f26997328c1b"
-   p.contains("Formal Shirt") -> "photo-1596755094514-f87e34085b2c"
-   p.contains("Polo T-Shirt") -> "photo-1581655353564-df123a1eb820"
-   p.contains("Crew Neck T-Shirt") -> "photo-1521572163474-6864f9cf17ab"
-   p.contains("Jeans") -> "photo-1542272604-787c3835535d"
-   p.contains("Trousers") -> "photo-1473966968600-fa801b869a1a"
-   p.contains("Chinos") -> "photo-1515886657613-9f3515b0c78f"
-   p.contains("Denim Jacket") -> "photo-1551028719-00167b16eac5"
-   p.contains("Winter Jacket") -> "photo-1544923246-77307dd654cb"
-   p.contains("Footwear") -> "photo-1542291026-7eec264c27ff"
-   p.contains("Accessories") -> "photo-1523170335258-f5ed11844a49"
-   p.contains("Smartphone") -> "photo-1511707171634-5f897ff02aa9"
-   p.contains("Watch") -> "photo-1523275335684-37898b6baf30"
-   p.contains("Earbuds") -> "photo-1606220945770-b5b6c2c55bf1"
-   p.contains("Speaker") -> "photo-1608043152269-423dbba4e7e1"
-   p.contains("Electronics") -> "photo-1498049794561-7780e7231661"
-   else -> "photo-1504917595217-d4dc5ebe6122"
+ var search by remember { mutableStateOf("") }
+ val products=unit.products.filter{it.contains(search,ignoreCase=true)}
+ LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(13.dp)){
+  item{
+   TextButton(onClick=onBack){Icon(Icons.Default.ArrowBack,null);Text(if(hindi) "वापस" else "Back")}
+   Text(unit.name,fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary)
+   Text(unit.detail,fontSize=13.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+   Spacer(Modifier.height(8.dp))
+   OutlinedTextField(search,{search=it},modifier=Modifier.fillMaxWidth(),singleLine=true,shape=RoundedCornerShape(16.dp),placeholder={Text(if(hindi) "उत्पाद खोजें" else "Search products")},leadingIcon={Icon(Icons.Default.Search,null)})
+   Text("${products.size} products • Illustrative catalogue",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
   }
-  return "https://images.unsplash.com/" + id + "?w=900&auto=format&fit=crop&q=85"
- }
- LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-  item { TextButton(onClick=onBack) { Text("← Back") }; Text(unit.name, fontSize=22.sp, fontWeight=FontWeight.ExtraBold); Text("Product catalogue • sample prices") }
-  items(unit.products) { p ->
-   val price = prices[p] ?: 999
-   val mrp = mrps[p] ?: price
-   Card(shape=RoundedCornerShape(18.dp), elevation=CardDefaults.cardElevation(3.dp)) {
+  items(products){p->
+   val price=demoPrice(p);val mrp=productMrp(p)
+   Card(shape=RoundedCornerShape(22.dp),elevation=CardDefaults.cardElevation(3.dp)){
     Column {
-     AsyncImage(model=photoFor(p), contentDescription=p, modifier=Modifier.fillMaxWidth().height(165.dp), contentScale=androidx.compose.ui.layout.ContentScale.Crop)
-     Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement=Arrangement.spacedBy(5.dp)) {
-      Text(p, fontWeight=FontWeight.Bold, fontSize=17.sp)
-      Text("Product specifications, brand and stock will be confirmed before order.", fontSize=12.sp)
-      if (unit.name.contains("LIFESTYLE")) Text(if(p.contains("Jeans") || p.contains("Trousers") || p.contains("Chinos")) "Sizes: 28 • 30 • 32 • 34 • 36 • 38" else "Sizes: S • M • L • XL • XXL", fontSize=11.sp)
-      Row(verticalAlignment=Alignment.CenterVertically) {
-       Text("₹" + price, fontSize=19.sp, fontWeight=FontWeight.ExtraBold, color=MaterialTheme.colorScheme.primary)
+     AsyncImage(model=productPhoto(p),contentDescription=p,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=androidx.compose.ui.layout.ContentScale.Crop)
+     Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(7.dp)){
+      Text(p,fontSize=17.sp,fontWeight=FontWeight.Bold)
+      Text(productDescription(p),fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+      if(unit.name.contains("LIFESTYLE"))Text(if(p.contains("Jeans")||p.contains("Trousers")||p.contains("Chinos")) "Sizes: 28 • 30 • 32 • 34 • 36 • 38" else "Sizes: S • M • L • XL • XXL",fontSize=11.sp)
+      Row(verticalAlignment=Alignment.CenterVertically){
+       Text("₹$price",fontSize=21.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary)
        Spacer(Modifier.width(8.dp))
-       if (mrp > price) Text("₹" + mrp, fontSize=12.sp, color=androidx.compose.ui.graphics.Color.Gray)
+       if(mrp>price)Text("₹$mrp",fontSize=12.sp,color=androidx.compose.ui.graphics.Color.Gray)
        Spacer(Modifier.weight(1f))
-       Text("sample rate", fontSize=10.sp)
+       if(mrp>price)Text("${(mrp-price)*100/mrp}% OFF",fontSize=11.sp,fontWeight=FontWeight.Bold,color=androidx.compose.ui.graphics.Color(0xFF16834A))
       }
-      if (mrp > price) Text(((mrp-price)*100/mrp).toString() + "% sample discount", fontSize=11.sp, color=androidx.compose.ui.graphics.Color(0xFF17834B))
-      Text("Illustrative photo and sample price only. Confirm taxes, transport and final quote.", fontSize=10.sp)
-      FilledTonalButton(onClick={onAdd(p)}, modifier=Modifier.fillMaxWidth()) { Icon(Icons.Default.AddShoppingCart,null); Text("  Add to cart") }
+      Text("Sample price • taxes, delivery and availability to be confirmed.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+      Button(onClick={onAdd(p)},modifier=Modifier.fillMaxWidth().height(48.dp),shape=RoundedCornerShape(14.dp)){Icon(Icons.Default.AddShoppingCart,null);Text(if(hindi) "कार्ट में जोड़ें" else "Add to cart",fontWeight=FontWeight.Bold)}
      }
     }
    }
   }
+  if(products.isEmpty())item{Text(if(hindi) "कोई उत्पाद नहीं मिला।" else "No matching products found.")}
  }
 }
 @Composable
 fun CartScreen(cart: List<CartLine>, onRemove:(CartLine)->Unit, onQuantity:(CartLine,Int)->Unit, hindi:Boolean, onCheckout:()->Unit){
  val total=cart.sumOf{it.price*it.qty}
- LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-  item{Text(if(hindi) "आपका कार्ट" else "My Cart",fontSize=25.sp,fontWeight=FontWeight.ExtraBold)}
-  if(cart.isEmpty()) item { Card(shape=RoundedCornerShape(22.dp)){Column(Modifier.fillMaxWidth().padding(28.dp),horizontalAlignment=Alignment.CenterHorizontally){Icon(Icons.Default.ShoppingCart,null,modifier=Modifier.size(48.dp));Text(if(hindi) "आपका कार्ट खाली है" else "Your cart is empty",fontWeight=FontWeight.Bold);Text(if(hindi) "उत्पाद जोड़ने पर वे यहाँ दिखेंगे।" else "Only products you add will appear here.")}} }
-  items(cart){line->Card(shape=RoundedCornerShape(18.dp),elevation=CardDefaults.cardElevation(2.dp)){Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically){
-   Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹${line.price*line.qty}",fontWeight=FontWeight.ExtraBold)}
-   IconButton(onClick={onQuantity(line,-1)}){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
-   Text("${line.qty}",fontWeight=FontWeight.Bold)
-   IconButton(onClick={onQuantity(line,1)}){Icon(Icons.Default.AddCircle,"Increase")}
-   IconButton(onClick={onRemove(line)}){Icon(Icons.Default.DeleteOutline,"Remove")}
+ LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(13.dp)){
+  item{Text(if(hindi) "आपका कार्ट" else "My Cart",fontSize=26.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(hindi) "आपके चुने हुए उत्पाद" else "${cart.sumOf{it.qty}} items selected",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+  if(cart.isEmpty())item{Card(shape=RoundedCornerShape(24.dp)){Column(Modifier.fillMaxWidth().padding(30.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(8.dp)){Icon(Icons.Default.ShoppingCart,null,modifier=Modifier.size(52.dp),tint=MaterialTheme.colorScheme.secondary);Text(if(hindi) "आपका कार्ट खाली है" else "Your cart is empty",fontSize=19.sp,fontWeight=FontWeight.Bold);Text(if(hindi) "खरीदारी से उत्पाद जोड़ें।" else "Add products from a business catalogue to see them here.",fontSize=12.sp)}}}
+  items(cart){line->Card(shape=RoundedCornerShape(20.dp),elevation=CardDefaults.cardElevation(2.dp)){Row(Modifier.fillMaxWidth().padding(11.dp),verticalAlignment=Alignment.CenterVertically){
+   AsyncImage(model=productPhoto(line.product),contentDescription=line.product,modifier=Modifier.size(88.dp),contentScale=androidx.compose.ui.layout.ContentScale.Crop)
+   Spacer(Modifier.width(12.dp))
+   Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)){
+    Text(line.product,fontWeight=FontWeight.Bold,fontSize=14.sp)
+    Text(line.unit,fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+    Text("₹${line.price*line.qty}",fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary,fontSize=17.sp)
+    Row(verticalAlignment=Alignment.CenterVertically){
+     IconButton(onClick={onQuantity(line,-1)},modifier=Modifier.size(30.dp)){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
+     Text("${line.qty}",fontWeight=FontWeight.Bold)
+     IconButton(onClick={onQuantity(line,1)},modifier=Modifier.size(30.dp)){Icon(Icons.Default.AddCircle,"Increase")}
+     Spacer(Modifier.width(5.dp))
+     TextButton(onClick={onRemove(line)}){Text(if(hindi) "हटाएँ" else "Remove",fontSize=11.sp)}
+    }
+   }
   }}}
   if(cart.isNotEmpty()){
-   item{Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Column(Modifier.fillMaxWidth().padding(16.dp)){Text(if(hindi) "ऑर्डर सारांश" else "Order Summary",fontWeight=FontWeight.Bold);Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(hindi) "कुल (डेमो)" else "Subtotal (demo)");Text("₹$total",fontWeight=FontWeight.ExtraBold,fontSize=20.sp)}}}}
-   item{Button(onClick=onCheckout,modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(16.dp)){Text(if(hindi) "आगे बढ़ें • Checkout" else "Proceed to Checkout",fontWeight=FontWeight.Bold);Icon(Icons.Default.ArrowForward,null)}}
+   item{Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+    Text(if(hindi) "ऑर्डर सारांश" else "Order summary",fontWeight=FontWeight.Bold,fontSize=17.sp)
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(hindi) "कुल आइटम" else "Items");Text("${cart.sumOf{it.qty}}")}
+    Divider()
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(hindi) "सबटोटल (सैंपल)" else "Subtotal (sample)",fontWeight=FontWeight.Bold);Text("₹$total",fontWeight=FontWeight.ExtraBold,fontSize=21.sp)}
+    Text(if(hindi) "डिलीवरी और अंतिम कीमत की पुष्टि चेकआउट पर होगी।" else "Delivery charges and final quote are confirmed at checkout.",fontSize=11.sp)
+   }}}
+   item{Button(onClick=onCheckout,modifier=Modifier.fillMaxWidth().height(55.dp),shape=RoundedCornerShape(16.dp)){Text(if(hindi) "चेकआउट के लिए आगे बढ़ें" else "Proceed to Checkout",fontWeight=FontWeight.Bold,fontSize=16.sp);Spacer(Modifier.width(8.dp));Icon(Icons.Default.ArrowForward,null)}}
   }
  }
 }
-
 @Composable
 fun CheckoutScreen(cart:List<CartLine>,name:String,onName:(String)->Unit,mobile:String,onMobile:(String)->Unit,address:String,onAddress:(String)->Unit,hindi:Boolean,onBack:()->Unit,sendWhatsApp:(String)->Unit){
  val total=cart.sumOf{it.price*it.qty}
