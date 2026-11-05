@@ -409,40 +409,6 @@ fun ContactScreen(hindi: Boolean, onWhatsApp: () -> Unit) {
 }
 undefined@Composable
 fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
-    var customerName by remember { mutableStateOf("") }
-    var favourite by remember { mutableStateOf("DS LIFESTYLE BRANDS") }
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
-        Text(if (hindi) "आपकी प्रोफ़ाइल" else "Your Profile", fontSize = 23.sp, fontWeight = FontWeight.Bold)
-        OutlinedTextField(customerName, { customerName = it }, modifier = Modifier.fillMaxWidth(), label = { Text(if (hindi) "आपका नाम" else "Your name") }, singleLine = true)
-        Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
-            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Text("DS REWARDS WALLET", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
-                Text("0 Coins", color = androidx.compose.ui.graphics.Color.White, fontSize = 28.sp, fontWeight = FontWeight.ExtraBold)
-                Text("Coins will be credited against verified orders after the rewards programme is activated.", color = androidx.compose.ui.graphics.Color.White, fontSize = 11.sp)
-            }
-        }
-        Text(if (hindi) "आपके लिए ऑफर" else "OFFERS FOR YOU", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-        Text("Choose your favourite business to preview relevant deals.", fontSize = 12.sp)
-        listOf("DS PROPERTIES", "DS BUILDING MATERIALS", "DS SOLAR TECHNOLOGY", "DS SMART GADGETS", "DS LIFESTYLE BRANDS").forEach { firm ->
-            FilterChip(selected = favourite == firm, onClick = { favourite = firm }, label = { Text(firm) })
-        }
-        Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
-            Column(Modifier.padding(15.dp)) {
-                Text(if (customerName.isBlank()) "Welcome offer preview" else "Hello, $customerName!", fontWeight = FontWeight.Bold)
-                Text("Your ${favourite.removePrefix("DS ")} deals will appear here. Coupon redemption and live personalised offers require the connected admin store.", fontSize = 12.sp)
-            }
-        }
-        Divider()
-        Text(if (hindi) "ऐप की भाषा" else "App Language", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilterChip(selected = !hindi, onClick = { onLanguageSelected(false) }, label = { Text("English") })
-            FilterChip(selected = hindi, onClick = { onLanguageSelected(true) }, label = { Text("हिन्दी") })
-        }
-        Text("We do not show invented customer counts, fake reviews or unverified years in business. Coins and offers are preview-only until live orders and admin systems are connected.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-@Composable
-fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
  val context=LocalContext.current
  val prefs=remember{context.getSharedPreferences("dsk_preferences",android.content.Context.MODE_PRIVATE)}
  var customerName by remember{mutableStateOf(prefs.getString("customer_name","")?: "")}
