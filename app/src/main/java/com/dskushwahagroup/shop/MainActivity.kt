@@ -77,9 +77,20 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
             topBar = {
                 TopAppBar(
                     title = {
-                        Column {
-                            Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                            Text(if (languageHindi) "आपका भरोसेमंद बिज़नेस ग्रुप" else "Your trusted business group", fontSize = 11.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Surface(
+                                modifier = Modifier.size(42.dp),
+                                shape = RoundedCornerShape(14.dp),
+                                color = MaterialTheme.colorScheme.primary
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text("DS", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp)
+                                }
+                            }
+                            Column {
+                                Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+                                Text(if (languageHindi) "आपका भरोसेमंद बिज़नेस ग्रुप" else "Your trusted business group", fontSize = 10.sp)
+                            }
                         }
                     },
                     actions = {
@@ -183,19 +194,6 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
                             Text(if (hindi) "देखें  ›" else "Explore  ›", color = MaterialTheme.colorScheme.secondary, fontSize = 11.sp)
                         }
                     }
-                }
-            }
-        }
-        items(visibleUnits) { unit ->
-            Card(onClick = { onSelectUnit(unit) }, shape = RoundedCornerShape(14.dp)) {
-                Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Business, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(30.dp))
-                    Spacer(Modifier.width(12.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(unit.name, fontWeight = FontWeight.Bold)
-                        Text(unit.detail, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Icon(Icons.Default.ChevronRight, null)
                 }
             }
         }
