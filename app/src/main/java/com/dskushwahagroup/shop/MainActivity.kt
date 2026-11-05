@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -47,14 +48,17 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DSKApp(sendWhatsApp: (String) -> Unit) {
+    // Active business units are maintained in one place. To restore a unit later,
+    // simply uncomment/add its UnitInfo entry here; the horizontal menu updates automatically.
     val units = listOf(
         UnitInfo("DS PROPERTIES", "प्रॉपर्टी", "Plots • Land • Houses • Apartments", listOf("Residential Plot", "Commercial Plot", "Agricultural Land", "House / Apartment")),
         UnitInfo("DS BUILDING MATERIALS", "बिल्डिंग मटेरियल", "Construction and building materials", listOf("Cement", "TMT / Steel", "Bricks", "Sand & Aggregate")),
         UnitInfo("DS SOLAR TECHNOLOGY", "सोलर टेक्नोलॉजी", "Solar products and installation enquiries", listOf("Solar Panel", "Solar Inverter", "Solar Street Light", "Solar Pump")),
         UnitInfo("DS SMART GADGETS", "स्मार्ट गैजेट्स", "Electronics and smart gadgets", listOf("Smartphone", "Smart Watch", "Bluetooth Earbuds", "Home Electronics")),
-        UnitInfo("DS LIFESTYLE BRANDS", "लाइफस्टाइल ब्रांड्स", "Apparels • Footwear • Accessories", listOf("Men's Apparel", "Women's Apparel", "Footwear", "Accessories")),
-        UnitInfo("DS POULTRY FARM", "पोल्ट्री फार्म", "Poultry products and supply enquiries", listOf("Poultry Chicks", "Poultry Feed", "Farm Supplies", "Equipment")),
-        UnitInfo("DS AQUA", "एक्वा", "Packaged drinking water enquiries", listOf("Packaged Water", "Bulk Water Order", "Bottle Supply", "Event / Function Supply"))
+        UnitInfo("DS LIFESTYLE BRANDS", "लाइफस्टाइल ब्रांड्स", "Apparels • Footwear • Accessories", listOf("Men's Apparel", "Women's Apparel", "Footwear", "Accessories"))
+        // Future re-add options (uncomment when needed):
+        // ,UnitInfo("DS POULTRY FARM", "पोल्ट्री फार्म", "Poultry products and supply enquiries", listOf("Poultry Chicks", "Poultry Feed", "Farm Supplies", "Equipment"))
+        // ,UnitInfo("DS AQUA", "एक्वा", "Packaged drinking water enquiries", listOf("Packaged Water", "Bulk Water Order", "Bottle Supply", "Event / Function Supply"))
     )
     var selectedTab by remember { mutableIntStateOf(0) }
     var selectedUnit by remember { mutableStateOf<UnitInfo?>(null) }
@@ -99,7 +103,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
             }
         ) { padding ->
             when (selectedTab) {
-                0 -> HomeScreen(languageHindi, units, onExplore = { selectedTab = 1 })
+                0 -> HomeScreen(languageHindi, units, onExplore = { selectedTab = 1 }, onSelectUnit = { selectedUnit = it; selectedTab = 1 })
                 1 -> if (selectedUnit == null) BusinessScreen(units, languageHindi) { selectedUnit = it }
                      else ProductScreen(selectedUnit!!, languageHindi, onBack = { selectedUnit = null }) { product ->
                          cart.add(CartLine(selectedUnit!!.name, product, 1))
@@ -113,7 +117,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
 }
 
 @Composable
-fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit) {
+fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onSelectUnit: (UnitInfo) -> Unit) {
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -121,7 +125,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit) {
                 Column(Modifier.padding(22.dp)) {
                     Text("DS KUSHWAHA GROUP", color = androidx.compose.ui.graphics.Color.White, fontSize = 23.sp, fontWeight = FontWeight.ExtraBold)
                     Spacer(Modifier.height(8.dp))
-                    Text(if (hindi) "एक समूह, सात व्यावसायिक सेवाएँ" else "One Group • Seven Business Verticals",
+                    Text(if (hindi) "एक समूह • पाँच व्यावसायिक सेवाएँ" else "One Group • Five Business Verticals",
                         color = androidx.compose.ui.graphics.Color.White, fontSize = 15.sp)
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onExplore, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
@@ -131,8 +135,29 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit) {
             }
         }
         item { Text(if (hindi) "हमारी व्यावसायिक इकाइयाँ" else "Our Business Units", fontSize = 19.sp, fontWeight = FontWeight.Bold) }
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(end = 4.dp)) {
+                items(units) { unit ->
+                    Card(
+                        onClick = { onSelectUnit(unit) },
+                        modifier = Modifier.width(158.dp).height(112.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(
+                            Modifier.fillMaxSize().padding(12.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(Icons.Default.Business, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(27.dp))
+                            Text(unit.name, fontWeight = FontWeight.Bold, fontSize = 12.sp, lineHeight = 15.sp)
+                            Text(if (hindi) "देखें  ›" else "Explore  ›", color = MaterialTheme.colorScheme.secondary, fontSize = 11.sp)
+                        }
+                    }
+                }
+            }
+        }
         items(units) { unit ->
-            Card(shape = RoundedCornerShape(14.dp)) {
+            Card(onClick = { onSelectUnit(unit) }, shape = RoundedCornerShape(14.dp)) {
                 Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Business, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(30.dp))
                     Spacer(Modifier.width(12.dp))
@@ -140,6 +165,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit) {
                         Text(unit.name, fontWeight = FontWeight.Bold)
                         Text(unit.detail, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
+                    Icon(Icons.Default.ChevronRight, null)
                 }
             }
         }
