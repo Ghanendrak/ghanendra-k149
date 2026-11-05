@@ -333,9 +333,9 @@ fun CartScreen(cart: List<CartLine>, onRemove:(CartLine)->Unit, onQuantity:(Cart
   item{Text(if(hindi) "आपका कार्ट" else "My Cart",fontSize=25.sp,fontWeight=FontWeight.ExtraBold)}
   if(cart.isEmpty()) item { Card(shape=RoundedCornerShape(22.dp)){Column(Modifier.fillMaxWidth().padding(28.dp),horizontalAlignment=Alignment.CenterHorizontally){Icon(Icons.Default.ShoppingCart,null,modifier=Modifier.size(48.dp));Text(if(hindi) "आपका कार्ट खाली है" else "Your cart is empty",fontWeight=FontWeight.Bold);Text(if(hindi) "उत्पाद जोड़ने पर वे यहाँ दिखेंगे।" else "Only products you add will appear here.")}} }
   items(cart){line->Card(shape=RoundedCornerShape(18.dp),elevation=CardDefaults.cardElevation(2.dp)){Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically){
-   Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹\${line.price*line.qty}",fontWeight=FontWeight.ExtraBold)}
+   Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹${line.price*line.qty}",fontWeight=FontWeight.ExtraBold)}
    IconButton(onClick={onQuantity(line,-1)}){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
-   Text("\${line.qty}",fontWeight=FontWeight.Bold)
+   Text("${line.qty}",fontWeight=FontWeight.Bold)
    IconButton(onClick={onQuantity(line,1)}){Icon(Icons.Default.AddCircle,"Increase")}
    IconButton(onClick={onRemove(line)}){Icon(Icons.Default.DeleteOutline,"Remove")}
   }}}
@@ -351,12 +351,12 @@ fun CheckoutScreen(cart:List<CartLine>,name:String,onName:(String)->Unit,mobile:
  val total=cart.sumOf{it.price*it.qty}
  LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{TextButton(onClick=onBack){Icon(Icons.Default.ArrowBack,null);Text(if(hindi) "कार्ट पर वापस" else "Back to cart")};Text(if(hindi) "चेकआउट" else "Checkout",fontSize=25.sp,fontWeight=FontWeight.ExtraBold)}
-  item{Card(shape=RoundedCornerShape(18.dp)){Column(Modifier.fillMaxWidth().padding(15.dp)){Text(if(hindi) "आपके चुने हुए उत्पाद" else "Your selected products",fontWeight=FontWeight.Bold);cart.forEach{Text("\${it.product} × \${it.qty}  —  ₹\${it.price*it.qty}",fontSize=13.sp)};Divider();Text("Total: ₹$total",fontWeight=FontWeight.ExtraBold,fontSize=20.sp)}}}
+  item{Card(shape=RoundedCornerShape(18.dp)){Column(Modifier.fillMaxWidth().padding(15.dp)){Text(if(hindi) "आपके चुने हुए उत्पाद" else "Your selected products",fontWeight=FontWeight.Bold);cart.forEach{Text("${it.product} × ${it.qty}  —  ₹${it.price*it.qty}",fontSize=13.sp)};Divider();Text("Total: ₹$total",fontWeight=FontWeight.ExtraBold,fontSize=20.sp)}}}
   item{Text(if(hindi) "डिलीवरी विवरण" else "Delivery details",fontWeight=FontWeight.Bold,fontSize=18.sp)}
   item{OutlinedTextField(name,onName,label={Text(if(hindi) "पूरा नाम" else "Full name")},modifier=Modifier.fillMaxWidth(),singleLine=true)}
   item{OutlinedTextField(mobile,onMobile,label={Text(if(hindi) "मोबाइल नंबर" else "Mobile number")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Phone),modifier=Modifier.fillMaxWidth(),singleLine=true)}
   item{OutlinedTextField(address,onAddress,label={Text(if(hindi) "पूरा पता / शहर / पिनकोड" else "Full address / city / PIN code")},modifier=Modifier.fillMaxWidth(),minLines=3)}
-  item{Button(onClick={val lines=cart.joinToString("\n"){"• \${it.product} x\${it.qty} = ₹\${it.price*it.qty}"};sendWhatsApp("DS KUSHWAHA GROUP Order\nCustomer: $name\nMobile: $mobile\nAddress: $address\n$lines\nDemo subtotal: ₹$total\nPlease confirm final price and availability.")},enabled=cart.isNotEmpty()&&name.isNotBlank()&&mobile.filter{it.isDigit()}.length>=10&&address.isNotBlank(),modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(16.dp)){Icon(Icons.Default.Send,null);Text(if(hindi) "WhatsApp पर ऑर्डर भेजें" else "Place Order via WhatsApp",fontWeight=FontWeight.Bold)}}
+  item{Button(onClick={val lines=cart.joinToString("\n"){"• ${it.product} x${it.qty} = ₹${it.price*it.qty}"};sendWhatsApp("DS KUSHWAHA GROUP Order\nCustomer: $name\nMobile: $mobile\nAddress: $address\n$lines\nDemo subtotal: ₹$total\nPlease confirm final price and availability.")},enabled=cart.isNotEmpty()&&name.isNotBlank()&&mobile.filter{it.isDigit()}.length>=10&&address.isNotBlank(),modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(16.dp)){Icon(Icons.Default.Send,null);Text(if(hindi) "WhatsApp पर ऑर्डर भेजें" else "Place Order via WhatsApp",fontWeight=FontWeight.Bold)}}
   item{Text(if(hindi) "अंतिम कीमत और उपलब्धता विक्रेता द्वारा पुष्टि की जाएगी।" else "Final price and availability will be confirmed by the seller.",fontSize=11.sp)}
  }
 }
