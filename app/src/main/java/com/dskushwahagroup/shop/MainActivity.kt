@@ -220,14 +220,16 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
   Triple("DS PROPERTIES","YOUR DREAM. OUR COMMITMENT.","Residential • Commercial • Plots & Land", "DS PROPERTIES"),
   Triple("DS SMART GADGETS","DIWALI MAHA OFFER","UP TO 50% OFF on all Smart Gadgets", "DS SMART GADGETS"),
   Triple("DS LIFESTYLE BRANDS","DIWALI MAHA SALE","BUY 1 GET 1 FREE", "DS LIFESTYLE BRANDS"),
-  Triple("DS BUILDING MATERIALS","DIWALI SPECIAL SALE","UP TO 10% OFF", "DS BUILDING MATERIALS")
+  Triple("DS BUILDING MATERIALS","DIWALI SPECIAL SALE","UP TO 10% OFF", "DS BUILDING MATERIALS"),
+  Triple("DS SOLAR TECHNOLOGY","DIWALI SOLAR SPECIAL","Explore solar solutions • Save on electricity", "DS SOLAR TECHNOLOGY")
  )
  val colors=listOf(
   androidx.compose.ui.graphics.Color(0xFF10284A),
   androidx.compose.ui.graphics.Color(0xFF173C70),
   androidx.compose.ui.graphics.Color(0xFF7A1E16),
   androidx.compose.ui.graphics.Color(0xFF7A1745),
-  androidx.compose.ui.graphics.Color(0xFF24533C)
+  androidx.compose.ui.graphics.Color(0xFF24533C),
+  androidx.compose.ui.graphics.Color(0xFF174B63)
  )
  LaunchedEffect(Unit){while(true){delay(4200);bannerState.animateScrollToItem((bannerState.firstVisibleItemIndex+1)%banners.size)}}
  LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(16.dp)){
