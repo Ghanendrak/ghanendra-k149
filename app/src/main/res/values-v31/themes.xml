@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.DSK" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#C69A43</item>
+        <item name="android:statusBarColor">#101C32</item>
+        <item name="android:navigationBarColor">#101C32</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenBackground">#101C32</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/dskg_logo</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#101C32</item>
+        <item name="android:windowSplashScreenAnimationDuration">800</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+</resources>

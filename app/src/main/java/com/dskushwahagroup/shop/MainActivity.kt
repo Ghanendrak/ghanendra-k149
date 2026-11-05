@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.net.URLEncoder
@@ -163,15 +166,12 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = androidx.compose.ui.graphics.Color.White),
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Surface(
-                                modifier = Modifier.size(42.dp),
-                                shape = RoundedCornerShape(14.dp),
-                                color = MaterialTheme.colorScheme.primary
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text("DS", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp)
-                                }
-                            }
+                            Image(
+                                painter = painterResource(R.drawable.dskg_logo),
+                                contentDescription = "DS KUSHWAHA GROUP logo",
+                                modifier = Modifier.size(46.dp),
+                                contentScale = ContentScale.Fit
+                            )
                             Column {
                                 Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
                                 Text(if (languageHindi) "आपका भरोसेमंद बिज़नेस ग्रुप" else "Your trusted business group", fontSize = 10.sp)
@@ -237,7 +237,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
   item{
    Row(Modifier.fillMaxWidth().padding(top=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween){
     Column(verticalArrangement=Arrangement.spacedBy(2.dp)){Text(if(hindi) "नमस्ते 👋" else "WELCOME TO",fontSize=10.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.secondary);Text("DS KUSHWAHA GROUP",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary);Text(if(hindi) "एक समूह • अनेक समाधान" else "One group. Multiple solutions.",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
-    Surface(shape=RoundedCornerShape(15.dp),color=MaterialTheme.colorScheme.primary){Text("DSKG",Modifier.padding(horizontal=13.dp,vertical=12.dp),fontWeight=FontWeight.ExtraBold,color=androidx.compose.ui.graphics.Color(0xFFFFD98A))}
+    Image(painter=painterResource(R.drawable.dskg_logo),contentDescription="DS KUSHWAHA GROUP logo",modifier=Modifier.size(54.dp),contentScale=ContentScale.Fit)
    }
   }
   item{
@@ -245,22 +245,33 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
     items(banners.size){i->
      val banner=banners[i]
      val unit=units.firstOrNull{it.name==banner.unitName}
-     Card(onClick={if(unit!=null)onSelectUnit(unit) else onExplore()},shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(205.dp)){
-      Box(Modifier.fillMaxSize().background(colors[i])){
-       Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF101C32)))))
-       Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.SpaceBetween){
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-         Text("DS KUSHWAHA GROUP",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
-         Text(if(i<2) "PROPERTY" else "DIWALI OFFER",color=androidx.compose.ui.graphics.Color.White,fontSize=9.sp,fontWeight=FontWeight.Bold)
-        }
-        Column(verticalArrangement=Arrangement.spacedBy(7.dp)){
-         Text(banner.title,color=androidx.compose.ui.graphics.Color.White,fontSize=19.sp,fontWeight=FontWeight.ExtraBold)
-         Text(banner.headline,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=if(i<2)16.sp else 21.sp,fontWeight=FontWeight.ExtraBold,lineHeight=25.sp)
-         Text(banner.subtitle,color=androidx.compose.ui.graphics.Color.White,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
-        }
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-         Text(if(hindi) "अभी देखें" else "TAP TO EXPLORE",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
-         Icon(Icons.Default.ArrowForward,null,tint=androidx.compose.ui.graphics.Color(0xFFFFD98A))
+     Card(onClick={if(unit!=null)onSelectUnit(unit) else onExplore()},shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(180.dp)){
+      if(i<2){
+       Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF10284A)),contentAlignment=Alignment.Center){
+        Image(
+         painter=painterResource(if(i==0) R.drawable.ds_properties_banner_1 else R.drawable.ds_properties_banner_2),
+         contentDescription=banner.title,
+         modifier=Modifier.fillMaxSize(),
+         contentScale=ContentScale.Fit
+        )
+       }
+      }else{
+       Box(Modifier.fillMaxSize().background(colors[i])){
+        Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF101C32)))))
+        Column(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.SpaceBetween){
+         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+          Text("DS KUSHWAHA GROUP",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
+          Text("DIWALI OFFER",color=androidx.compose.ui.graphics.Color.White,fontSize=9.sp,fontWeight=FontWeight.Bold)
+         }
+         Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
+          Text(banner.title,color=androidx.compose.ui.graphics.Color.White,fontSize=17.sp,fontWeight=FontWeight.ExtraBold)
+          Text(banner.headline,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=if(i==3)21.sp else 19.sp,fontWeight=FontWeight.ExtraBold,lineHeight=23.sp)
+          Text(banner.subtitle,color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp,fontWeight=FontWeight.SemiBold)
+         }
+         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+          Text(if(hindi) "अभी देखें" else "TAP TO EXPLORE",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
+          Icon(Icons.Default.ArrowForward,null,tint=androidx.compose.ui.graphics.Color(0xFFFFD98A))
+         }
         }
        }
       }
