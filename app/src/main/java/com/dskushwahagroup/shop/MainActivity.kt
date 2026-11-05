@@ -337,64 +337,35 @@ fun ContactScreen(hindi: Boolean, onWhatsApp: () -> Unit) {
 
 @Composable
 fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    var customerName by remember { mutableStateOf("") }
+    var favourite by remember { mutableStateOf("DS LIFESTYLE BRANDS") }
+    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Text(if (hindi) "आपकी प्रोफ़ाइल" else "Your Profile", fontSize = 23.sp, fontWeight = FontWeight.Bold)
-        Card(shape = RoundedCornerShape(18.dp)) {
-            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(34.dp))
-                Text("DS KUSHWAHA GROUP", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                Text(if (hindi) "अपनी पसंद की भाषा चुनें" else "Choose your preferred language")
-                Text(
-                    if (hindi) "ऐप के मेन्यू, प्रोडक्ट और ब्राउज़िंग स्क्रीन आपकी चुनी हुई भाषा में दिखाई देंगी।"
-                    else "App menus, product browsing and available content will appear in your selected language.",
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        OutlinedTextField(customerName, { customerName = it }, modifier = Modifier.fillMaxWidth(), label = { Text(if (hindi) "आपका नाम" else "Your name") }, singleLine = true)
+        Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text("DS REWARDS WALLET", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                Text("0 Coins", color = androidx.compose.ui.graphics.Color.White, fontSize = 28.sp, fontWeight = FontWeight.ExtraBold)
+                Text("Coins will be credited against verified orders after the rewards programme is activated.", color = androidx.compose.ui.graphics.Color.White, fontSize = 11.sp)
             }
         }
+        Text(if (hindi) "आपके लिए ऑफर" else "OFFERS FOR YOU", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+        Text("Choose your favourite business to preview relevant deals.", fontSize = 12.sp)
+        listOf("DS PROPERTIES", "DS BUILDING MATERIALS", "DS SOLAR TECHNOLOGY", "DS SMART GADGETS", "DS LIFESTYLE BRANDS").forEach { firm ->
+            FilterChip(selected = favourite == firm, onClick = { favourite = firm }, label = { Text(firm) })
+        }
+        Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+            Column(Modifier.padding(15.dp)) {
+                Text(if (customerName.isBlank()) "Welcome offer preview" else "Hello, \${customerName}!", fontWeight = FontWeight.Bold)
+                Text("Your \${favourite.removePrefix("DS ")} deals will appear here. Coupon redemption and live personalised offers require the connected admin store.", fontSize = 12.sp)
+            }
+        }
+        Divider()
         Text(if (hindi) "ऐप की भाषा" else "App Language", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Card(
-            onClick = { onLanguageSelected(false) },
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (!hindi) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("🇬🇧", fontSize = 24.sp)
-                Spacer(Modifier.width(14.dp))
-                Column(Modifier.weight(1f)) {
-                    Text("English", fontWeight = FontWeight.Bold)
-                    Text(if (hindi) "Default browsing language" else "Default language", fontSize = 12.sp)
-                }
-                if (!hindi) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
-            }
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FilterChip(selected = !hindi, onClick = { onLanguageSelected(false) }, label = { Text("English") })
+            FilterChip(selected = hindi, onClick = { onLanguageSelected(true) }, label = { Text("हिन्दी") })
         }
-        Card(
-            onClick = { onLanguageSelected(true) },
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (hindi) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("🇮🇳", fontSize = 24.sp)
-                Spacer(Modifier.width(14.dp))
-                Column(Modifier.weight(1f)) {
-                    Text("हिन्दी", fontWeight = FontWeight.Bold)
-                    Text("Hindi", fontSize = 12.sp)
-                }
-                if (hindi) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
-            }
-        }
-        Text(
-            if (hindi) "आपकी भाषा की पसंद इस डिवाइस पर सेव रहेगी।"
-            else "Your language preference will be saved on this device and remembered next time you open the app.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("We do not show invented customer counts, fake reviews or unverified years in business. Coins and offers are preview-only until live orders and admin systems are connected.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
