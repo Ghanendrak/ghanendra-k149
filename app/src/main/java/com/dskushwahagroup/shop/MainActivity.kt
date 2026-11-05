@@ -96,6 +96,7 @@ private fun productDescription(p:String):String = when {
 private const val WHATSAPP_NUMBER = "918933979022"
 
 data class UnitInfo(val name: String, val hindi: String, val detail: String, val products: List<String>)
+data class HomeBanner(val title: String, val headline: String, val subtitle: String, val unitName: String)
 
 data class CartLine(val unit: String, val product: String, val price: Int, val qty: Int)
 
@@ -216,12 +217,12 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
  val visibleUnits=units.filter{it.name.contains(searchText,true)||it.hindi.contains(searchText,true)||it.detail.contains(searchText,true)}
  val bannerState= rememberLazyListState()
  val banners=listOf(
-  Triple("DS PROPERTIES","BUY • SELL • RENT • INVEST","Lowest brokerage • 1% + 1%", "DS PROPERTIES"),
-  Triple("DS PROPERTIES","YOUR DREAM. OUR COMMITMENT.","Residential • Commercial • Plots & Land", "DS PROPERTIES"),
-  Triple("DS SMART GADGETS","DIWALI MAHA OFFER","UP TO 50% OFF on all Smart Gadgets", "DS SMART GADGETS"),
-  Triple("DS LIFESTYLE BRANDS","DIWALI MAHA SALE","BUY 1 GET 1 FREE", "DS LIFESTYLE BRANDS"),
-  Triple("DS BUILDING MATERIALS","DIWALI SPECIAL SALE","UP TO 10% OFF", "DS BUILDING MATERIALS"),
-  Triple("DS SOLAR TECHNOLOGY","DIWALI SOLAR SPECIAL","Explore solar solutions • Save on electricity", "DS SOLAR TECHNOLOGY")
+  HomeBanner("DS PROPERTIES","BUY • SELL • RENT • INVEST","Lowest brokerage • 1% + 1%", "DS PROPERTIES"),
+  HomeBanner("DS PROPERTIES","YOUR DREAM. OUR COMMITMENT.","Residential • Commercial • Plots & Land", "DS PROPERTIES"),
+  HomeBanner("DS SMART GADGETS","DIWALI MAHA OFFER","UP TO 50% OFF on all Smart Gadgets", "DS SMART GADGETS"),
+  HomeBanner("DS LIFESTYLE BRANDS","DIWALI MAHA SALE","BUY 1 GET 1 FREE", "DS LIFESTYLE BRANDS"),
+  HomeBanner("DS BUILDING MATERIALS","DIWALI SPECIAL SALE","UP TO 10% OFF", "DS BUILDING MATERIALS"),
+  HomeBanner("DS SOLAR TECHNOLOGY","DIWALI SOLAR SPECIAL","Explore solar solutions • Save on electricity", "DS SOLAR TECHNOLOGY")
  )
  val colors=listOf(
   androidx.compose.ui.graphics.Color(0xFF10284A),
@@ -243,7 +244,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
    LazyRow(state=bannerState,horizontalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(end=5.dp)){
     items(banners.size){i->
      val banner=banners[i]
-     val unit=units.firstOrNull{it.name==banner.fourth}
+     val unit=units.firstOrNull{it.name==banner.unitName}
      Card(onClick={if(unit!=null)onSelectUnit(unit) else onExplore()},shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(205.dp)){
       Box(Modifier.fillMaxSize().background(colors[i])){
        Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF101C32)))))
@@ -253,9 +254,9 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
          Text(if(i<2) "PROPERTY" else "DIWALI OFFER",color=androidx.compose.ui.graphics.Color.White,fontSize=9.sp,fontWeight=FontWeight.Bold)
         }
         Column(verticalArrangement=Arrangement.spacedBy(7.dp)){
-         Text(banner.first,color=androidx.compose.ui.graphics.Color.White,fontSize=19.sp,fontWeight=FontWeight.ExtraBold)
-         Text(banner.second,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=if(i<2)16.sp else 21.sp,fontWeight=FontWeight.ExtraBold,lineHeight=25.sp)
-         Text(banner.third,color=androidx.compose.ui.graphics.Color.White,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
+         Text(banner.title,color=androidx.compose.ui.graphics.Color.White,fontSize=19.sp,fontWeight=FontWeight.ExtraBold)
+         Text(banner.headline,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=if(i<2)16.sp else 21.sp,fontWeight=FontWeight.ExtraBold,lineHeight=25.sp)
+         Text(banner.subtitle,color=androidx.compose.ui.graphics.Color.White,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
         }
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
          Text(if(hindi) "अभी देखें" else "TAP TO EXPLORE",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
