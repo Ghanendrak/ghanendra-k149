@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -65,6 +67,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
         // ,UnitInfo("DS AQUA", "एक्वा", "Packaged drinking water enquiries", listOf("Packaged Water", "Bulk Water Order", "Bottle Supply", "Event / Function Supply"))
     )
     var selectedTab by remember { mutableIntStateOf(0) }
+    var showCheckout by remember { mutableStateOf(false) }
     var selectedUnit by remember { mutableStateOf<UnitInfo?>(null) }
     val cart = remember { mutableStateListOf<CartLine>() }
     var customerName by remember { mutableStateOf("") }
@@ -112,7 +115,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                         icon = { Icon(Icons.Default.Home, null) }, label = { Text(if (languageHindi) "होम" else "Home") })
                     NavigationBarItem(selected = selectedTab == 1, onClick = { selectedTab = 1; selectedUnit = null },
                         icon = { Icon(Icons.Default.Store, null) }, label = { Text(if (languageHindi) "व्यवसाय" else "Businesses") })
-                    NavigationBarItem(selected = selectedTab == 2, onClick = { selectedTab = 2; selectedUnit = null },
+                    NavigationBarItem(selected = selectedTab == 2, onClick = { selectedTab = 2; selectedUnit = null; showCheckout = false },
                         icon = { Icon(Icons.Default.ShoppingCart, null) }, label = { Text("${if (languageHindi) "ऑर्डर" else "Cart"} (${cart.size})") })
                     NavigationBarItem(selected = selectedTab == 3, onClick = { selectedTab = 3; selectedUnit = null },
                         icon = { Icon(Icons.Default.SupportAgent, null) }, label = { Text(if (languageHindi) "संपर्क" else "Contact") })
@@ -128,7 +131,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
                          val i=cart.indexOfFirst { it.unit==selectedUnit!!.name && it.product==product }
                          if(i>=0) cart[i]=cart[i].copy(qty=cart[i].qty+1) else cart.add(CartLine(selectedUnit!!.name,product,demoPrice(product),1))
                      }
-                2 -> CartScreen(cart, { cart.remove(it) }, { line,delta -> val i=cart.indexOf(line); if(i>=0){val q=line.qty+delta;if(q<=0)cart.removeAt(i) else cart[i]=line.copy(qty=q)} }, customerName, { customerName=it }, mobile, { mobile=it }, address, { address=it }, languageHindi, sendWhatsApp)
+                2 -> if (showCheckout) CheckoutScreen(cart, customerName, { customerName=it }, mobile, { mobile=it }, address, { address=it }, languageHindi, onBack={ showCheckout=false }, sendWhatsApp=sendWhatsApp) else CartScreen(cart, { cart.remove(it) }, { line,delta -> val i=cart.indexOf(line); if(i>=0){val q=line.qty+delta;if(q<=0)cart.removeAt(i) else cart[i]=line.copy(qty=q)} }, languageHindi, onCheckout={ showCheckout=true })
                 3 -> ContactScreen(languageHindi) { sendWhatsApp("Hello DS KUSHWAHA GROUP, I need more information about your businesses.") }
                 else -> ProfileScreen(languageHindi, onLanguageSelected = { selectLanguage(it) })
             }
@@ -146,12 +149,19 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
     }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFF10284A))) {
-                Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("DS KUSHWAHA GROUP", color = androidx.compose.ui.graphics.Color(0xFFE2BD70), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    Text("BIG SAVINGS.\nBETTER CHOICES.", color = androidx.compose.ui.graphics.Color.White, fontSize = 25.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 29.sp)
-                    Text("Explore our demo catalogue across five business categories.", color = androidx.compose.ui.graphics.Color.White, fontSize = 13.sp)
-                    Button(onClick = onExplore, colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFFC69A43))) { Text("SHOP NOW", color = androidx.compose.ui.graphics.Color(0xFF10284A), fontWeight = FontWeight.Bold) }
+            val bannerState = rememberLazyListState()
+            val titles = listOf("BIG SAVINGS. BETTER CHOICES.", "POWER YOUR HOME WITH SOLAR.", "STYLE THAT SPEAKS FOR YOU.", "BUILD BETTER. LIVE BETTER.")
+            val subtitles = listOf("Explore all five DS business categories.", "Panels, inverters and batteries for your needs.", "Discover shirts, T-shirts and daily essentials.", "Property and building material enquiries made easy.")
+            LaunchedEffect(Unit) { while(true) { delay(3200); bannerState.animateScrollToItem((bannerState.firstVisibleItemIndex+1)%titles.size) } }
+            LazyRow(state=bannerState,horizontalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(end=4.dp)) {
+                items(titles.size) { index ->
+                    Card(shape=RoundedCornerShape(24.dp),modifier=Modifier.width(310.dp).height(205.dp),colors=CardDefaults.cardColors(containerColor=androidx.compose.ui.graphics.Color(0xFF10284A))) {
+                        Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.SpaceBetween) {
+                            Text("DS KUSHWAHA GROUP  •  EXCLUSIVE",color=androidx.compose.ui.graphics.Color(0xFFE2BD70),fontSize=11.sp,fontWeight=FontWeight.Bold)
+                            Column { Text(titles[index],color=androidx.compose.ui.graphics.Color.White,fontSize=23.sp,fontWeight=FontWeight.ExtraBold,lineHeight=27.sp);Text(subtitles[index],color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
+                            Button(onClick=onExplore,colors=ButtonDefaults.buttonColors(containerColor=androidx.compose.ui.graphics.Color(0xFFC69A43))){Text("EXPLORE NOW",color=androidx.compose.ui.graphics.Color(0xFF10284A),fontWeight=FontWeight.Bold)}
+                        }
+                    }
                 }
             }
         }
@@ -254,22 +264,39 @@ fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (St
  val mrps = mapOf("Premium Formal Shirt" to 1599, "Premium Polo T-Shirt" to 1199, "Crew Neck T-Shirt" to 799, "Slim Fit Jeans" to 1999, "Formal Trousers" to 1699, "Casual Chinos" to 1599, "Denim Jacket" to 2499, "Winter Jacket" to 3199, "Casual Footwear" to 1299, "Fashion Accessories" to 599, "Cement 50 kg Bag" to 430, "TMT Sariya" to 74, "Construction Sand" to 2000, "Red Bricks" to 11, "Solar Panel 550W" to 14500, "Solar Inverter" to 21000, "Tubular Battery" to 14500, "Solar Water Pump" to 36000, "Home UPS" to 7900, "Solar DC Wire" to 55, "Mounting Structure" to 5200)
  fun photoFor(p: String): String {
   val id = when {
-   p.contains("Shirt") -> "photo-1596755094514-f87e34085b2c"
-   p.contains("T-Shirt") -> "photo-1521572163474-6864f9cf17ab"
+   p.contains("Residential Plot") || p.contains("Agricultural Land") -> "photo-1500382017468-9049fed747ef"
+   p.contains("Commercial Plot") -> "photo-1486406146926-c627a92ad1ab"
+   p.contains("House") || p.contains("Apartment") -> "photo-1600585154340-be6161a56a0c"
+   p.contains("Cement") -> "photo-1518709268805-4e9042af9f23"
+   p.contains("TMT") || p.contains("Sariya") -> "photo-1504917595217-d4dc5ebe6122"
+   p.contains("Sand") -> "photo-1504307651254-35680f356dfd"
+   p.contains("Bricks") -> "photo-1590725140246-20acb1fbe6e2"
+   p.contains("Aggregate") || p.contains("Stone") -> "photo-1518709268805-4e9042af9f23"
+   p.contains("Solar Panel") -> "photo-1508514177221-188b1cf16e9d"
+   p.contains("Inverter") -> "photo-1621905251189-08b45d6a269e"
+   p.contains("Battery") -> "photo-1609091839311-d5365f9ff1c5"
+   p.contains("Pump") -> "photo-1572120360610-d971b9d7767c"
+   p.contains("Home UPS") -> "photo-1558008258-3256797b43f3"
+   p.contains("Solar DC Wire") -> "photo-1558618666-fcd25c85cd64"
+   p.contains("Mounting Structure") -> "photo-1497440001374-f26997328c1b"
+   p.contains("Formal Shirt") -> "photo-1596755094514-f87e34085b2c"
+   p.contains("Polo T-Shirt") -> "photo-1581655353564-df123a1eb820"
+   p.contains("Crew Neck T-Shirt") -> "photo-1521572163474-6864f9cf17ab"
    p.contains("Jeans") -> "photo-1542272604-787c3835535d"
-   p.contains("Trousers") || p.contains("Chinos") -> "photo-1473966968600-fa801b869a1a"
-   p.contains("Jacket") -> "photo-1551028719-00167b16eac5"
+   p.contains("Trousers") -> "photo-1473966968600-fa801b869a1a"
+   p.contains("Chinos") -> "photo-1515886657613-9f3515b0c78f"
+   p.contains("Denim Jacket") -> "photo-1551028719-00167b16eac5"
+   p.contains("Winter Jacket") -> "photo-1544923246-77307dd654cb"
    p.contains("Footwear") -> "photo-1542291026-7eec264c27ff"
-   p.contains("Solar") || p.contains("Structure") -> "photo-1508514177221-188b1cf16e9d"
-   p.contains("Battery") || p.contains("UPS") || p.contains("Inverter") -> "photo-1621905251189-08b45d6a269e"
-   p.contains("Pump") -> "photo-1473341304170-971dcad3f4f9"
+   p.contains("Accessories") -> "photo-1523170335258-f5ed11844a49"
    p.contains("Smartphone") -> "photo-1511707171634-5f897ff02aa9"
    p.contains("Watch") -> "photo-1523275335684-37898b6baf30"
    p.contains("Earbuds") -> "photo-1606220945770-b5b6c2c55bf1"
    p.contains("Speaker") -> "photo-1608043152269-423dbba4e7e1"
+   p.contains("Electronics") -> "photo-1498049794561-7780e7231661"
    else -> "photo-1504917595217-d4dc5ebe6122"
   }
-  return "https://images.unsplash.com/" + id + "?w=900&auto=format&fit=crop&q=80"
+  return "https://images.unsplash.com/" + id + "?w=900&auto=format&fit=crop&q=85"
  }
  LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
   item { TextButton(onClick=onBack) { Text("← Back") }; Text(unit.name, fontSize=22.sp, fontWeight=FontWeight.ExtraBold); Text("Product catalogue • sample prices") }
@@ -300,25 +327,37 @@ fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (St
  }
 }
 @Composable
-fun CartScreen(cart: List<CartLine>, onRemove:(CartLine)->Unit, onQuantity:(CartLine,Int)->Unit, name:String,onName:(String)->Unit,mobile:String,onMobile:(String)->Unit,address:String,onAddress:(String)->Unit,hindi:Boolean,sendWhatsApp:(String)->Unit){
+fun CartScreen(cart: List<CartLine>, onRemove:(CartLine)->Unit, onQuantity:(CartLine,Int)->Unit, hindi:Boolean, onCheckout:()->Unit){
  val total=cart.sumOf{it.price*it.qty}
  LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
- item{Text("My Cart",fontSize=23.sp,fontWeight=FontWeight.ExtraBold)}
- if(cart.isEmpty())item{Text("Your cart is empty. Explore products to get started.")}
- items(cart){line->Card(shape=RoundedCornerShape(18.dp)){Row(Modifier.fillMaxWidth().padding(12.dp),verticalAlignment=Alignment.CenterVertically){
- Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹${line.price*line.qty}",fontWeight=FontWeight.Bold)}
- IconButton(onClick={onQuantity(line,-1)}){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
- Text("${line.qty}",fontWeight=FontWeight.Bold)
- IconButton(onClick={onQuantity(line,1)}){Icon(Icons.Default.AddCircle,"Increase")}
- IconButton(onClick={onRemove(line)}){Icon(Icons.Default.DeleteOutline,"Remove")}
- }}}
- if(cart.isNotEmpty())item{Text("Subtotal (demo): ₹$total",fontSize=20.sp,fontWeight=FontWeight.ExtraBold)}
- item{Divider();Text("Customer details",fontWeight=FontWeight.Bold,fontSize=18.sp)}
- item{OutlinedTextField(name,onName,label={Text("Your name")},modifier=Modifier.fillMaxWidth())}
- item{OutlinedTextField(mobile,onMobile,label={Text("Mobile number")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Phone),modifier=Modifier.fillMaxWidth())}
- item{OutlinedTextField(address,onAddress,label={Text("Delivery address / city")},modifier=Modifier.fillMaxWidth(),minLines=2)}
- item{Button(onClick={val lines=cart.joinToString("\n"){"• ${it.product} x${it.qty} = ₹${it.price*it.qty}"};sendWhatsApp("DS KUSHWAHA GROUP Order\nCustomer: $name\nMobile: $mobile\nAddress: $address\n$lines\nDemo subtotal: ₹$total\nPlease confirm final price and availability.")},enabled=cart.isNotEmpty()&&name.isNotBlank()&&mobile.length>=10,modifier=Modifier.fillMaxWidth()){Icon(Icons.Default.Send,null);Text("  Place order / WhatsApp")}}
- item{Text("All displayed prices are demo prices. Final price and availability will be confirmed by seller.",fontSize=11.sp)}
+  item{Text(if(hindi) "आपका कार्ट" else "My Cart",fontSize=25.sp,fontWeight=FontWeight.ExtraBold)}
+  if(cart.isEmpty()) item { Card(shape=RoundedCornerShape(22.dp)){Column(Modifier.fillMaxWidth().padding(28.dp),horizontalAlignment=Alignment.CenterHorizontally){Icon(Icons.Default.ShoppingCart,null,modifier=Modifier.size(48.dp));Text(if(hindi) "आपका कार्ट खाली है" else "Your cart is empty",fontWeight=FontWeight.Bold);Text(if(hindi) "उत्पाद जोड़ने पर वे यहाँ दिखेंगे।" else "Only products you add will appear here.")}} }
+  items(cart){line->Card(shape=RoundedCornerShape(18.dp),elevation=CardDefaults.cardElevation(2.dp)){Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically){
+   Column(Modifier.weight(1f)){Text(line.product,fontWeight=FontWeight.Bold);Text(line.unit,fontSize=11.sp);Text("₹\${line.price*line.qty}",fontWeight=FontWeight.ExtraBold)}
+   IconButton(onClick={onQuantity(line,-1)}){Icon(Icons.Default.RemoveCircleOutline,"Decrease")}
+   Text("\${line.qty}",fontWeight=FontWeight.Bold)
+   IconButton(onClick={onQuantity(line,1)}){Icon(Icons.Default.AddCircle,"Increase")}
+   IconButton(onClick={onRemove(line)}){Icon(Icons.Default.DeleteOutline,"Remove")}
+  }}}
+  if(cart.isNotEmpty()){
+   item{Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Column(Modifier.fillMaxWidth().padding(16.dp)){Text(if(hindi) "ऑर्डर सारांश" else "Order Summary",fontWeight=FontWeight.Bold);Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(hindi) "कुल (डेमो)" else "Subtotal (demo)");Text("₹$total",fontWeight=FontWeight.ExtraBold,fontSize=20.sp)}}}}
+   item{Button(onClick=onCheckout,modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(16.dp)){Text(if(hindi) "आगे बढ़ें • Checkout" else "Proceed to Checkout",fontWeight=FontWeight.Bold);Icon(Icons.Default.ArrowForward,null)}}
+  }
+ }
+}
+
+@Composable
+fun CheckoutScreen(cart:List<CartLine>,name:String,onName:(String)->Unit,mobile:String,onMobile:(String)->Unit,address:String,onAddress:(String)->Unit,hindi:Boolean,onBack:()->Unit,sendWhatsApp:(String)->Unit){
+ val total=cart.sumOf{it.price*it.qty}
+ LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+  item{TextButton(onClick=onBack){Icon(Icons.Default.ArrowBack,null);Text(if(hindi) "कार्ट पर वापस" else "Back to cart")};Text(if(hindi) "चेकआउट" else "Checkout",fontSize=25.sp,fontWeight=FontWeight.ExtraBold)}
+  item{Card(shape=RoundedCornerShape(18.dp)){Column(Modifier.fillMaxWidth().padding(15.dp)){Text(if(hindi) "आपके चुने हुए उत्पाद" else "Your selected products",fontWeight=FontWeight.Bold);cart.forEach{Text("\${it.product} × \${it.qty}  —  ₹\${it.price*it.qty}",fontSize=13.sp)};Divider();Text("Total: ₹$total",fontWeight=FontWeight.ExtraBold,fontSize=20.sp)}}}
+  item{Text(if(hindi) "डिलीवरी विवरण" else "Delivery details",fontWeight=FontWeight.Bold,fontSize=18.sp)}
+  item{OutlinedTextField(name,onName,label={Text(if(hindi) "पूरा नाम" else "Full name")},modifier=Modifier.fillMaxWidth(),singleLine=true)}
+  item{OutlinedTextField(mobile,onMobile,label={Text(if(hindi) "मोबाइल नंबर" else "Mobile number")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Phone),modifier=Modifier.fillMaxWidth(),singleLine=true)}
+  item{OutlinedTextField(address,onAddress,label={Text(if(hindi) "पूरा पता / शहर / पिनकोड" else "Full address / city / PIN code")},modifier=Modifier.fillMaxWidth(),minLines=3)}
+  item{Button(onClick={val lines=cart.joinToString("\n"){"• \${it.product} x\${it.qty} = ₹\${it.price*it.qty}"};sendWhatsApp("DS KUSHWAHA GROUP Order\nCustomer: $name\nMobile: $mobile\nAddress: $address\n$lines\nDemo subtotal: ₹$total\nPlease confirm final price and availability.")},enabled=cart.isNotEmpty()&&name.isNotBlank()&&mobile.filter{it.isDigit()}.length>=10&&address.isNotBlank(),modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(16.dp)){Icon(Icons.Default.Send,null);Text(if(hindi) "WhatsApp पर ऑर्डर भेजें" else "Place Order via WhatsApp",fontWeight=FontWeight.Bold)}}
+  item{Text(if(hindi) "अंतिम कीमत और उपलब्धता विक्रेता द्वारा पुष्टि की जाएगी।" else "Final price and availability will be confirmed by the seller.",fontSize=11.sp)}
  }
 }
 
