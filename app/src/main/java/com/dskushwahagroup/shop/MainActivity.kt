@@ -118,6 +118,12 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
 
 @Composable
 fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onSelectUnit: (UnitInfo) -> Unit) {
+    var searchText by remember { mutableStateOf("") }
+    val visibleUnits = units.filter {
+        it.name.contains(searchText, ignoreCase = true) ||
+        it.hindi.contains(searchText, ignoreCase = true) ||
+        it.detail.contains(searchText, ignoreCase = true)
+    }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -134,10 +140,34 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
                 }
             }
         }
+        item {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                placeholder = { Text(if (hindi) "फर्म या सेवा खोजें" else "Search firms and services") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+            )
+        }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(if (hindi) "DS KUSHWAHA GROUP विशेष" else "DS KUSHWAHA GROUP EXCLUSIVE", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                    Text(if (hindi) "हमारी पाँचों फर्म की सेवाएँ एक ही ऐप में।" else "Explore products and services across all five business units.", fontSize = 14.sp)
+                    Text(if (hindi) "ऑफर और कूपन जल्द उपलब्ध होंगे" else "Offers & coupons coming soon", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                }
+            }
+        }
         item { Text(if (hindi) "हमारी व्यावसायिक इकाइयाँ" else "Our Business Units", fontSize = 19.sp, fontWeight = FontWeight.Bold) }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(end = 4.dp)) {
-                items(units) { unit ->
+                items(visibleUnits) { unit ->
                     Card(
                         onClick = { onSelectUnit(unit) },
                         modifier = Modifier.width(158.dp).height(112.dp),
@@ -156,7 +186,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
                 }
             }
         }
-        items(units) { unit ->
+        items(visibleUnits) { unit ->
             Card(onClick = { onSelectUnit(unit) }, shape = RoundedCornerShape(14.dp)) {
                 Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Business, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(30.dp))
