@@ -407,7 +407,7 @@ fun ContactScreen(hindi: Boolean, onWhatsApp: () -> Unit) {
   item{Text("Business hours and service availability are confirmed by the team when you contact us.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)}
  }
 }
-undefined@Composable
+@Composable
 fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
  val context=LocalContext.current
  val prefs=remember{context.getSharedPreferences("dsk_preferences",android.content.Context.MODE_PRIVATE)}
