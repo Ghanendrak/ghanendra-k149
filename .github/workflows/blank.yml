@@ -27,18 +27,11 @@ jobs:
           script: |
             gradle installDebug
             adb shell am force-stop com.dskushwahagroup.shop
-            adb shell am start -W -n com.dskushwahagroup.shop/.MainActivity
+            adb shell am start -n com.dskushwahagroup.shop/.MainActivity
             sleep 20
-            if [ -z "$(adb shell pidof com.dskushwahagroup.shop)" ]; then
-              adb logcat -d -t 3000
-              echo "App process exited after launch."
-              exit 1
-            fi
-            if adb logcat -d -t 3000 | grep -q "FATAL EXCEPTION"; then
-              adb logcat -d -t 3000
-              echo "Fatal exception detected during app launch."
-              exit 1
-            fi
+            adb shell pidof com.dskushwahagroup.shop
+            adb logcat -d -t 3000 > /tmp/dskg-logcat.txt
+            ! grep -q "FATAL EXCEPTION" /tmp/dskg-logcat.txt
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
