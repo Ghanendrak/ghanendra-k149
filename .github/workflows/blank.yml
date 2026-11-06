@@ -17,6 +17,28 @@ jobs:
           gradle-version: "8.7"
       - name: Build debug APK
         run: gradle assembleDebug
+      - name: Android 14 emulator launch smoke test
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            gradle installDebug
+            adb shell am force-stop com.dskushwahagroup.shop
+            adb shell am start -W -n com.dskushwahagroup.shop/.MainActivity
+            sleep 20
+            if [ -z "$(adb shell pidof com.dskushwahagroup.shop)" ]; then
+              adb logcat -d -t 3000
+              echo "App process exited after launch."
+              exit 1
+            fi
+            if adb logcat -d -t 3000 | grep -q "FATAL EXCEPTION"; then
+              adb logcat -d -t 3000
+              echo "Fatal exception detected during app launch."
+              exit 1
+            fi
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
