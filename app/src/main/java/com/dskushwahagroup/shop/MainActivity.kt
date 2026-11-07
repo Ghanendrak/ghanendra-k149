@@ -42,7 +42,7 @@ private fun demoPrice(p:String)=mapOf(
 private fun productMrp(p:String):Int = mapOf(
  "Premium Formal Shirt" to 1599, "Premium Polo T-Shirt" to 1199, "Crew Neck T-Shirt" to 799, "Slim Fit Jeans" to 1999, "Formal Trousers" to 1699, "Casual Chinos" to 1599, "Denim Jacket" to 2499, "Winter Jacket" to 3199, "Casual Footwear" to 1299, "Fashion Accessories" to 599,
  "Cement 50 kg Bag" to 430, "TMT Sariya" to 74, "Construction Sand" to 2000, "Red Bricks" to 11, "Solar Panel 550W" to 14500, "Solar Inverter" to 21000, "Tubular Battery" to 14500, "Solar Water Pump" to 36000, "Home UPS" to 7900, "Solar DC Wire" to 55, "Mounting Structure" to 5200
-)[p] ?: demoPrice(p)
+)[p] ?: (demoPrice(p) * 115 / 100)
 
 private fun productPhoto(p:String):String {
  val id=when {
@@ -216,20 +216,22 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
  val visibleUnits=units.filter{it.name.contains(searchText,true)||it.hindi.contains(searchText,true)||it.detail.contains(searchText,true)}
  val bannerState= rememberLazyListState()
  val banners=listOf(
-  HomeBanner("DS PROPERTIES","BUY • SELL • RENT • INVEST","Lowest brokerage • 1% + 1%", "DS PROPERTIES"),
-  HomeBanner("DS PROPERTIES","YOUR DREAM. OUR COMMITMENT.","Residential • Commercial • Plots & Land", "DS PROPERTIES"),
-  HomeBanner("DS SMART GADGETS","DIWALI MAHA OFFER","UP TO 50% OFF on all Smart Gadgets", "DS SMART GADGETS"),
-  HomeBanner("DS LIFESTYLE BRANDS","DIWALI MAHA SALE","BUY 1 GET 1 FREE", "DS LIFESTYLE BRANDS"),
-  HomeBanner("DS BUILDING MATERIALS","DIWALI SPECIAL SALE","UP TO 10% OFF", "DS BUILDING MATERIALS"),
-  HomeBanner("DS SOLAR TECHNOLOGY","DIWALI SOLAR SPECIAL","Explore solar solutions • Save on electricity", "DS SOLAR TECHNOLOGY")
+  HomeBanner("DS PROPERTIES","DIWALI PROPERTY FESTIVAL","Festive deals on plots, land & homes • Enquire now", "DS PROPERTIES"),
+  HomeBanner("DS BUILDING MATERIALS","DIWALI CONSTRUCTION BONANZA","Festive rates on cement, steel & building materials", "DS BUILDING MATERIALS"),
+  HomeBanner("DS POULTRY FARM","DIWALI SPECIAL OFFERS","Seasonal supply offers • Ask our team for today's rates", "DS POULTRY FARM"),
+  HomeBanner("DS AQUA","DIWALI CELEBRATION OFFERS","Packaged drinking water & bulk supply enquiries", "DS AQUA"),
+  HomeBanner("DS SOLAR TECHNOLOGY","LIGHT UP YOUR DIWALI","Explore solar solutions • Save on electricity", "DS SOLAR TECHNOLOGY"),
+  HomeBanner("DS SMART GADGETS","DIWALI GADGET MAHA SALE","Festive deals on smartphones, audio & smart devices", "DS SMART GADGETS"),
+  HomeBanner("DS LIFESTYLE BRANDS","DIWALI STYLE FESTIVAL","Festive offers on apparel, footwear & accessories", "DS LIFESTYLE BRANDS")
  )
  val colors=listOf(
-  androidx.compose.ui.graphics.Color(0xFF10284A),
-  androidx.compose.ui.graphics.Color(0xFF173C70),
   androidx.compose.ui.graphics.Color(0xFF7A1E16),
-  androidx.compose.ui.graphics.Color(0xFF7A1745),
   androidx.compose.ui.graphics.Color(0xFF24533C),
-  androidx.compose.ui.graphics.Color(0xFF174B63)
+  androidx.compose.ui.graphics.Color(0xFF7A1745),
+  androidx.compose.ui.graphics.Color(0xFF174B63),
+  androidx.compose.ui.graphics.Color(0xFF10284A),
+  androidx.compose.ui.graphics.Color(0xFF8A4B12),
+  androidx.compose.ui.graphics.Color(0xFF6B245C)
  )
  LaunchedEffect(Unit){while(true){delay(4200);bannerState.animateScrollToItem((bannerState.firstVisibleItemIndex+1)%banners.size)}}
  LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(16.dp)){
@@ -245,38 +247,26 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
      val banner=banners[i]
      val unit=units.firstOrNull{it.name==banner.unitName}
      Card(onClick={if(unit!=null)onSelectUnit(unit) else onExplore()},shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(180.dp)){
-      if(i<2){
-       Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF10284A)),contentAlignment=Alignment.Center){
-        Image(
-         painter=painterResource(if(i==0) R.drawable.ds_properties_banner_1 else R.drawable.ds_properties_banner_2),
-         contentDescription=banner.title,
-         modifier=Modifier.fillMaxSize(),
-         contentScale=ContentScale.Fit
-        )
-       }
-      }else{
-       Box(Modifier.fillMaxSize().background(colors[i])){
-        Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF101C32)))))
-        Column(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.SpaceBetween){
-         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-          Text("DS KUSHWAHA GROUP",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
-          Text("DIWALI OFFER",color=androidx.compose.ui.graphics.Color.White,fontSize=9.sp,fontWeight=FontWeight.Bold)
-         }
-         Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
-          Text(banner.title,color=androidx.compose.ui.graphics.Color.White,fontSize=17.sp,fontWeight=FontWeight.ExtraBold)
-          Text(banner.headline,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=if(i==3)21.sp else 19.sp,fontWeight=FontWeight.ExtraBold,lineHeight=23.sp)
-          Text(banner.subtitle,color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp,fontWeight=FontWeight.SemiBold)
-         }
-         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-          Text(if(hindi) "अभी देखें" else "TAP TO EXPLORE",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontSize=10.sp,fontWeight=FontWeight.Bold)
-          Icon(Icons.Default.ArrowForward,null,tint=androidx.compose.ui.graphics.Color(0xFFFFD98A))
-         }
+      Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF171426))))){
+       Text("✨  🪔  ✨",modifier=Modifier.align(Alignment.TopEnd).padding(12.dp),fontSize=22.sp)
+       Column(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.SpaceBetween){
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+         Text("DS KUSHWAHA GROUP",color=androidx.compose.ui.graphics.Color(0xFFFFE6A8),fontSize=10.sp,fontWeight=FontWeight.Bold)
+         Text("DIWALI SPECIAL",color=androidx.compose.ui.graphics.Color.White,fontSize=9.sp,fontWeight=FontWeight.ExtraBold)
+        }
+        Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
+         Text(banner.title,color=androidx.compose.ui.graphics.Color.White,fontSize=16.sp,fontWeight=FontWeight.ExtraBold)
+         Text(banner.headline,color=androidx.compose.ui.graphics.Color(0xFFFFD76A),fontSize=18.sp,fontWeight=FontWeight.ExtraBold,lineHeight=22.sp)
+         Text(banner.subtitle,color=androidx.compose.ui.graphics.Color.White,fontSize=11.sp,fontWeight=FontWeight.SemiBold,maxLines=2)
+        }
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+         Text(if(hindi) "अभी देखें" else "TAP TO EXPLORE",color=androidx.compose.ui.graphics.Color(0xFFFFE6A8),fontSize=10.sp,fontWeight=FontWeight.Bold)
+         Text("🪔",fontSize=20.sp)
         }
        }
       }
      }
-    }
-   }
+    }   }
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.Center){repeat(banners.size){i->Surface(Modifier.padding(horizontal=3.dp).size(if(bannerState.firstVisibleItemIndex==i)18.dp else 6.dp,6.dp),shape=RoundedCornerShape(50),color=if(bannerState.firstVisibleItemIndex==i)MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant){} }}
   }
   item{
