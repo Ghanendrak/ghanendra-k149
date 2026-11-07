@@ -16,8 +16,8 @@ jobs:
         with:
           gradle-version: "8.7"
       - name: Build debug APK
-        run: gradle assembleDebug
-      - name: Android 14 emulator launch smoke test
+        run: gradle clean assembleDebug
+      - name: Android 14 launch and stability test
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -25,15 +25,35 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
+            set -e
             gradle installDebug
+            adb logcat -c
             adb shell am force-stop com.dskushwahagroup.shop
-            adb shell am start -n com.dskushwahagroup.shop/.MainActivity
-            sleep 20
+            adb shell am start -W -n com.dskushwahagroup.shop/.MainActivity
+            sleep 30
             adb shell pidof com.dskushwahagroup.shop
-            adb logcat -d -t 3000 > /tmp/dskg-logcat.txt
-            ! grep -q "FATAL EXCEPTION" /tmp/dskg-logcat.txt
+            adb shell dumpsys activity activities > /tmp/dskg-activities.txt
+            grep -E "mResumedActivity|topResumedActivity" /tmp/dskg-activities.txt | grep -q "com.dskushwahagroup.shop"
+            adb shell screencap -p /sdcard/dskg-home.png
+            adb pull /sdcard/dskg-home.png /tmp/dskg-home.png
+            adb logcat -d -t 6000 > /tmp/dskg-logcat.txt
+            if grep -q "FATAL EXCEPTION" /tmp/dskg-logcat.txt; then
+              grep -A 50 -B 10 "FATAL EXCEPTION" /tmp/dskg-logcat.txt
+              exit 1
+            fi
+            mkdir -p smoke-test-results
+            cp /tmp/dskg-home.png smoke-test-results/
+            cp /tmp/dskg-logcat.txt smoke-test-results/
+            cp /tmp/dskg-activities.txt smoke-test-results/
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: DS-KUSHWAHA-GROUP-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload Android 14 test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DS-KUSHWAHA-GROUP-android14-test-evidence
+          path: smoke-test-results/
+          if-no-files-found: ignore
