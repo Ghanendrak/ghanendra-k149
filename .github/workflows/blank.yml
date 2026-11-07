@@ -26,6 +26,8 @@ jobs:
           disable-animations: true
           script: |
             set -e
+            mkdir -p smoke-test-results
+            trap 'adb logcat -d -t 6000 > smoke-test-results/logcat.txt 2>/dev/null || true; adb shell dumpsys activity activities > smoke-test-results/activities.txt 2>/dev/null || true; adb shell screencap -p /sdcard/dskg-home.png 2>/dev/null && adb pull /sdcard/dskg-home.png smoke-test-results/home.png 2>/dev/null || true' EXIT
             gradle installDebug
             adb logcat -c
             adb shell am force-stop com.dskushwahagroup.shop
@@ -41,11 +43,8 @@ jobs:
               grep -A 50 -B 10 "FATAL EXCEPTION" /tmp/dskg-logcat.txt
               exit 1
             fi
-            mkdir -p smoke-test-results
-            cp /tmp/dskg-home.png smoke-test-results/
-            cp /tmp/dskg-logcat.txt smoke-test-results/
-            cp /tmp/dskg-activities.txt smoke-test-results/
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: DS-KUSHWAHA-GROUP-debug-apk
