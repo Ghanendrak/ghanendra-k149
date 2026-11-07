@@ -9,18 +9,18 @@ android {
     defaultConfig {
         applicationId = "com.dskushwahagroup.shop"
         minSdk = 23
-        targetSdk = 35
-        versionCode = 3
-        versionName = "1.2"
+        targetSdk = 34
+        versionCode = 4
+        versionName = "1.3"
     }
     buildFeatures { compose = true }
-compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-kotlinOptions {
-    jvmTarget = "17"
-}
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.10.01"))
