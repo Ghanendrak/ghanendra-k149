@@ -23,9 +23,10 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
-          cores: 4
+          cores: 2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 4096
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          emulator-boot-timeout: 1200
           script: |
             set -u
             mkdir -p smoke-test-results
