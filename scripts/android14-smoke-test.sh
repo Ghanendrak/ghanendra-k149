@@ -12,6 +12,22 @@ capture_diagnostics() {
 }
 trap capture_diagnostics EXIT
 
+if ! gradle connectedDebugAndroidTest; then
+  for path in app/build/reports/androidTests/connected app/build/outputs/androidTest-results/connected; do
+    if [[ -e "$path" ]]; then
+      cp -R "$path" smoke-test-results/
+    fi
+  done
+  echo "Android shopping-flow UI tests failed. See uploaded test evidence."
+  exit 1
+fi
+
+for path in app/build/reports/androidTests/connected app/build/outputs/androidTest-results/connected; do
+  if [[ -e "$path" ]]; then
+    cp -R "$path" smoke-test-results/
+  fi
+done
+
 gradle installDebug
 adb logcat -c
 adb shell am force-stop com.dskushwahagroup.shop || true
@@ -45,4 +61,4 @@ if grep -E -q 'FATAL EXCEPTION|Fatal signal' smoke-test-results/logcat.txt; then
   exit 1
 fi
 
-echo "Android 14 launch smoke test passed."
+echo "Android 14 shopping-flow UI tests and launch smoke test passed."
