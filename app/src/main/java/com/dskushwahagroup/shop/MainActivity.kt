@@ -99,7 +99,7 @@ private fun productDescription(p:String):String = when {
 private const val WHATSAPP_NUMBER = "918933979022"
 
 data class UnitInfo(val name: String, val hindi: String, val detail: String, val products: List<String>)
-data class HomeBanner(val title: String, val headline: String, val subtitle: String, val unitName: String)
+data class HomeBanner(val title: String, val headline: String, val subtitle: String, val unitName: String, val imageProduct: String)
 
 data class CartLine(val unit: String, val product: String, val price: Int, val qty: Int)
 
@@ -129,9 +129,7 @@ fun DSKApp(sendWhatsApp: (String) -> Unit) {
         UnitInfo("DS BUILDING MATERIALS", "बिल्डिंग मटेरियल", "Construction and building materials", listOf("Cement 50 kg Bag", "TMT Sariya", "Construction Sand", "Red Bricks", "Stone Aggregate")),
         UnitInfo("DS SOLAR TECHNOLOGY", "सोलर टेक्नोलॉजी", "Solar products and installation enquiries", listOf("Solar Panel 550W", "Solar Inverter", "Tubular Battery", "Solar Water Pump", "Home UPS", "Solar DC Wire", "Mounting Structure")),
         UnitInfo("DS SMART GADGETS", "स्मार्ट गैजेट्स", "Electronics and smart gadgets", listOf("Android Smartphone", "Smart Watch", "Bluetooth Earbuds", "Bluetooth Speaker", "Home Electronics")),
-        UnitInfo("DS LIFESTYLE BRANDS", "लाइफस्टाइल ब्रांड्स", "Apparels • Footwear • Accessories", listOf("Premium Formal Shirt", "Premium Polo T-Shirt", "Crew Neck T-Shirt", "Slim Fit Jeans", "Formal Trousers", "Casual Chinos", "Denim Jacket", "Winter Jacket", "Casual Footwear", "Fashion Accessories")),
-        UnitInfo("DS POULTRY FARM", "पोल्ट्री फार्म", "Poultry products and supply enquiries", listOf("Poultry Chicks", "Poultry Feed", "Farm Supplies", "Equipment")),
-        UnitInfo("DS AQUA", "एक्वा", "Packaged drinking water enquiries", listOf("Packaged Water", "Bulk Water Order", "Bottle Supply", "Event / Function Supply"))
+        UnitInfo("DS LIFESTYLE BRANDS", "लाइफस्टाइल ब्रांड्स", "Apparels • Footwear • Accessories", listOf("Premium Formal Shirt", "Premium Polo T-Shirt", "Crew Neck T-Shirt", "Slim Fit Jeans", "Formal Trousers", "Casual Chinos", "Denim Jacket", "Winter Jacket", "Casual Footwear", "Fashion Accessories"))
     )
     var selectedTab by remember { mutableIntStateOf(0) }
     var showCheckout by remember { mutableStateOf(false) }
@@ -216,19 +214,15 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
  val visibleUnits=units.filter{it.name.contains(searchText,true)||it.hindi.contains(searchText,true)||it.detail.contains(searchText,true)}
  val bannerState= rememberLazyListState()
  val banners=listOf(
-  HomeBanner("DS PROPERTIES","PROPERTY VALUE DEALS","Explore plots, land & homes • Enquire for today's quote", "DS PROPERTIES"),
-  HomeBanner("DS BUILDING MATERIALS","BUILD MORE, SAVE MORE","Special rates on cement, steel & construction materials", "DS BUILDING MATERIALS"),
-  HomeBanner("DS POULTRY FARM","FARM SUPPLY DEALS","Poultry products and farm essentials • Ask for current rates", "DS POULTRY FARM"),
-  HomeBanner("DS AQUA","BULK ORDER SAVINGS","Packaged drinking water • Enquire about bulk supply", "DS AQUA"),
-  HomeBanner("DS SOLAR TECHNOLOGY","SAVE WITH SOLAR","Explore solar panels, inverters and energy solutions", "DS SOLAR TECHNOLOGY"),
-  HomeBanner("DS SMART GADGETS","SMART GADGET DEALS","Explore smartphones, audio and everyday tech", "DS SMART GADGETS"),
-  HomeBanner("DS LIFESTYLE BRANDS","STYLE & VALUE OFFERS","Fresh looks in apparel, footwear and accessories", "DS LIFESTYLE BRANDS")
+  HomeBanner("DS PROPERTIES","PROPERTY VALUE DEALS","Explore plots, land & homes • Enquire for today's quote", "DS PROPERTIES", "Residential Plot"),
+  HomeBanner("DS BUILDING MATERIALS","BUILD MORE, SAVE MORE","Special rates on cement, steel & construction materials", "DS BUILDING MATERIALS", "Cement 50 kg Bag"),
+  HomeBanner("DS SOLAR TECHNOLOGY","SAVE WITH SOLAR","Explore solar panels, inverters and energy solutions", "DS SOLAR TECHNOLOGY", "Solar Panel 550W"),
+  HomeBanner("DS SMART GADGETS","SMART GADGET DEALS","Explore smartphones, audio and smart devices", "DS SMART GADGETS", "Android Smartphone"),
+  HomeBanner("DS LIFESTYLE BRANDS","STYLE & VALUE OFFERS","Fresh looks in apparel, footwear and accessories", "DS LIFESTYLE BRANDS", "Premium Formal Shirt")
  )
  val colors=listOf(
   androidx.compose.ui.graphics.Color(0xFF10284A),
   androidx.compose.ui.graphics.Color(0xFF183B66),
-  androidx.compose.ui.graphics.Color(0xFF244A72),
-  androidx.compose.ui.graphics.Color(0xFF6D5528),
   androidx.compose.ui.graphics.Color(0xFF1B3558),
   androidx.compose.ui.graphics.Color(0xFF385778),
   androidx.compose.ui.graphics.Color(0xFF8A6B2E)
@@ -247,7 +241,14 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
      val banner=banners[i]
      val unit=units.firstOrNull{it.name==banner.unitName}
      Card(onClick={if(unit!=null)onSelectUnit(unit) else onExplore()},shape=RoundedCornerShape(24.dp),modifier=Modifier.width(315.dp).height(180.dp)){
-      Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i],androidx.compose.ui.graphics.Color(0xFF171426))))){
+      Box(Modifier.fillMaxSize()) {
+       AsyncImage(
+        model=productPhoto(banner.imageProduct),
+        contentDescription=null,
+        modifier=Modifier.fillMaxSize(),
+        contentScale=ContentScale.Crop
+       )
+       Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors[i].copy(alpha=0.84f),androidx.compose.ui.graphics.Color(0xE6171426))))){
        Text("✦  ★  ✦",modifier=Modifier.align(Alignment.TopEnd).padding(12.dp),fontSize=20.sp)
        Column(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.SpaceBetween){
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
@@ -266,6 +267,7 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
        }
       }
      }
+    }
     }   }
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.Center){repeat(banners.size){i->Surface(Modifier.padding(horizontal=3.dp).size(if(bannerState.firstVisibleItemIndex==i)18.dp else 6.dp,6.dp),shape=RoundedCornerShape(50),color=if(bannerState.firstVisibleItemIndex==i)MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant){} }}
   }
@@ -451,7 +453,7 @@ fun ProfileScreen(hindi: Boolean, onLanguageSelected: (Boolean) -> Unit) {
   }}}
   item{Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primary)){Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text("DS REWARDS WALLET",color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold,fontSize=12.sp);Text("0 Coins",color=androidx.compose.ui.graphics.Color.White,fontSize=29.sp,fontWeight=FontWeight.ExtraBold);Text(if(hindi) "रिवॉर्ड प्रोग्राम सक्रिय होने और ऑर्डर सत्यापित होने पर कॉइन लागू होंगे।" else "Coins will be credited only after verified orders and activation of the rewards programme.",color=androidx.compose.ui.graphics.Color.White,fontSize=11.sp)}}}
   item{Text(if(hindi) "आपकी पसंदीदा श्रेणी" else "Your favourite business",fontWeight=FontWeight.Bold,fontSize=17.sp)}
-  item{Column(verticalArrangement=Arrangement.spacedBy(7.dp)){listOf("DS PROPERTIES","DS BUILDING MATERIALS","DS POULTRY FARM","DS AQUA","DS SOLAR TECHNOLOGY","DS SMART GADGETS","DS LIFESTYLE BRANDS").forEach{firm->FilterChip(selected=favourite==firm,onClick={favourite=firm;prefs.edit().putString("favourite_business",firm).apply()},label={Text(firm)},modifier=Modifier.fillMaxWidth())}}}
+  item{Column(verticalArrangement=Arrangement.spacedBy(7.dp)){listOf("DS PROPERTIES","DS BUILDING MATERIALS","DS SOLAR TECHNOLOGY","DS SMART GADGETS","DS LIFESTYLE BRANDS").forEach{firm->FilterChip(selected=favourite==firm,onClick={favourite=firm;prefs.edit().putString("favourite_business",firm).apply()},label={Text(firm)},modifier=Modifier.fillMaxWidth())}}}
   item{Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(if(hindi) "आपके लिए" else "Picked for you",fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary);Text("Your ${favourite.removePrefix("DS ")} offers and product updates will be shown here when the live offers service is connected.",fontSize=12.sp)}}}
   item{Divider();Text(if(hindi) "ऐप की भाषा" else "App language",fontWeight=FontWeight.Bold,fontSize=17.sp);Row(horizontalArrangement=Arrangement.spacedBy(10.dp)){FilterChip(selected=!hindi,onClick={onLanguageSelected(false)},label={Text("English")});FilterChip(selected=hindi,onClick={onLanguageSelected(true)},label={Text("हिन्दी")})}}
   item{Text("This profile is stored on this device. Live order history, coin balance, coupons and personalised offers require a connected customer account and admin service.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,modifier=Modifier.padding(bottom=12.dp))}
