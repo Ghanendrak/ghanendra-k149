@@ -209,11 +209,11 @@ fun HomeScreen(hindi: Boolean, units: List<UnitInfo>, onExplore: () -> Unit, onS
  val visibleUnits=units.filter{it.name.contains(searchText,true)||it.hindi.contains(searchText,true)||it.detail.contains(searchText,true)}
  val bannerState= rememberLazyListState()
  val banners=listOf(
-  HomeBanner("DS PROPERTIES","PROPERTY VALUE DEALS","Explore plots, land & homes • Enquire for today's quote", "DS PROPERTIES", "Residential Plot"),
-  HomeBanner("DS BUILDING MATERIALS","BUILD MORE, SAVE MORE","Special rates on cement, steel & construction materials", "DS BUILDING MATERIALS", "Cement 50 kg Bag"),
-  HomeBanner("DS SOLAR TECHNOLOGY","SAVE WITH SOLAR","Explore solar panels, inverters and energy solutions", "DS SOLAR TECHNOLOGY", "Solar Panel 550W"),
-  HomeBanner("DS SMART GADGETS","SMART GADGET DEALS","Explore smartphones, audio and smart devices", "DS SMART GADGETS", "Android Smartphone"),
-  HomeBanner("DS LIFESTYLE BRANDS","STYLE & VALUE OFFERS","Fresh looks in apparel, footwear and accessories", "DS LIFESTYLE BRANDS", "Premium Formal Shirt")
+  HomeBanner("DS PROPERTIES","PLOTS • LAND • HOMES","Explore residential and commercial properties • Ask for current details", "DS PROPERTIES", "Residential Plot"),
+  HomeBanner("DS BUILDING MATERIALS","BUILDING MATERIALS RANGE","Cement, steel and construction essentials • Request a current quote", "DS BUILDING MATERIALS", "Cement 50 kg Bag"),
+  HomeBanner("DS SOLAR TECHNOLOGY","SOLAR & ENERGY SOLUTIONS","Panels, inverters and pumps • Enquire about suitable systems", "DS SOLAR TECHNOLOGY", "Solar Panel 550W"),
+  HomeBanner("DS SMART GADGETS","SMART GADGET COLLECTION","Phones, audio and everyday tech • Check current models", "DS SMART GADGETS", "Android Smartphone"),
+  HomeBanner("DS LIFESTYLE BRANDS","STYLE COLLECTION","Apparel, footwear and accessories • Explore available sizes", "DS LIFESTYLE BRANDS", "Premium Formal Shirt")
  )
  val colors=listOf(
   androidx.compose.ui.graphics.Color(0xFF10284A),
