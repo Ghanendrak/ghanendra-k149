@@ -39,11 +39,6 @@ private fun demoPrice(p:String)=mapOf(
  "Premium Formal Shirt" to 1199, "Premium Polo T-Shirt" to 899, "Crew Neck T-Shirt" to 599, "Slim Fit Jeans" to 1499, "Formal Trousers" to 1299, "Casual Chinos" to 1199, "Denim Jacket" to 1999, "Winter Jacket" to 2499, "Casual Footwear" to 999, "Fashion Accessories" to 399
 )[p]?:999
 
-private fun productMrp(p:String):Int = mapOf(
- "Premium Formal Shirt" to 1599, "Premium Polo T-Shirt" to 1199, "Crew Neck T-Shirt" to 799, "Slim Fit Jeans" to 1999, "Formal Trousers" to 1699, "Casual Chinos" to 1599, "Denim Jacket" to 2499, "Winter Jacket" to 3199, "Casual Footwear" to 1299, "Fashion Accessories" to 599,
- "Cement 50 kg Bag" to 430, "TMT Sariya" to 74, "Construction Sand" to 2000, "Red Bricks" to 11, "Solar Panel 550W" to 14500, "Solar Inverter" to 21000, "Tubular Battery" to 14500, "Solar Water Pump" to 36000, "Home UPS" to 7900, "Solar DC Wire" to 55, "Mounting Structure" to 5200
-)[p] ?: (demoPrice(p) * 115 / 100)
-
 private fun productPhoto(p:String):String {
  val id=when {
   p.contains("Residential Plot") || p.contains("Agricultural Land") -> "photo-1500382017468-9049fed747ef"
@@ -340,7 +335,7 @@ fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (St
    Text("${products.size} products • Illustrative catalogue",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
   }
   items(products){p->
-   val price=demoPrice(p);val mrp=productMrp(p)
+   val price=demoPrice(p)
    Card(shape=RoundedCornerShape(22.dp),elevation=CardDefaults.cardElevation(3.dp)){
     Column {
      AsyncImage(model=productPhoto(p),contentDescription=p,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=androidx.compose.ui.layout.ContentScale.Crop)
@@ -351,9 +346,7 @@ fun ProductScreen(unit: UnitInfo, hindi: Boolean, onBack: () -> Unit, onAdd: (St
       Row(verticalAlignment=Alignment.CenterVertically){
        Text("₹$price",fontSize=21.sp,fontWeight=FontWeight.ExtraBold,color=MaterialTheme.colorScheme.primary)
        Spacer(Modifier.width(8.dp))
-       if(mrp>price)Text("₹$mrp",fontSize=12.sp,color=androidx.compose.ui.graphics.Color.Gray)
        Spacer(Modifier.weight(1f))
-       if(mrp>price)Text("${(mrp-price)*100/mrp}% OFF",fontSize=11.sp,fontWeight=FontWeight.Bold,color=androidx.compose.ui.graphics.Color(0xFF16834A))
       }
       Text("Sample price • taxes, delivery and availability to be confirmed.",fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
       Button(onClick={onAdd(p)},modifier=Modifier.fillMaxWidth().height(48.dp),shape=RoundedCornerShape(14.dp)){Icon(Icons.Default.AddShoppingCart,null);Text(if(hindi) "कार्ट में जोड़ें" else "Add to cart",fontWeight=FontWeight.Bold)}
