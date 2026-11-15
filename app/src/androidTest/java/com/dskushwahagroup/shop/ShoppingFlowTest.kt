@@ -1,6 +1,6 @@
 package com.dskushwahagroup.shop
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -24,8 +24,8 @@ class ShoppingFlowTest {
         composeRule.setContent { DSKApp(sendWhatsApp = sendOrder) }
         composeRule.onNodeWithText("Businesses").performClick()
         composeRule.onNodeWithText("DS SMART GADGETS").performClick()
-        composeRule.onNodeWithText("Android Smartphone").assertExists()
-        composeRule.onAllNodesWithText("Add to cart").onFirst().performClick()
+        composeRule.onNodeWithText("Android Smartphone").assertIsDisplayed()
+        composeRule.onAllNodesWithText("Add to cart")[0].performClick()
         composeRule.onNodeWithText("Cart (1)").performClick()
     }
 
