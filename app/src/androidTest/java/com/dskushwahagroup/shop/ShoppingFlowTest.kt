@@ -34,10 +34,10 @@ class ShoppingFlowTest {
         openGadgetsAndAddPhone()
 
         composeRule.onNodeWithContentDescription("Increase").performClick()
-        composeRule.onNodeWithText("₹25998").assertExists()
+        composeRule.onNodeWithText("₹25998").assertIsDisplayed()
 
         composeRule.onNodeWithText("Remove").performClick()
-        composeRule.onNodeWithText("Your cart is empty").assertExists()
+        composeRule.onNodeWithText("Your cart is empty").assertIsDisplayed()
     }
 
     @Test
